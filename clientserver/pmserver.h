@@ -13,10 +13,16 @@
 
 class PMServer {
 public:
-    PMServer();
+    PMServer(int port);
+    listNG();
+    createNG();
+    deleteNG();
+    listArt();
+    readArt();
+    writeArt();
+    deleteArt();
     
 private:
-    Server s;
 };
 
 #endif /* defined(____pmserver__) */

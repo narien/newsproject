@@ -44,7 +44,19 @@ void PMServer::listArt(const std::shared_ptr<Connection>& conn) {
   int groupID = getNumP(conn);
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
-    //lista
+    //lista artiklarna i nyhetsgruppen med id groupID
+  } else {
+    //felmeddelande
+  }
+}
+
+void PMServer::createArt(const std::shared_ptr<Connection>& conn) {
+  int groupID = getNumP(conn);
+  string title = getStringP(conn);
+  string author = getStringP(conn);
+  string text = getStringP(conn);
+  if (endByte == Protocol::COM_END) {
+    //skapa artikeln och lägg i databasen
   } else {
     //felmeddelande
   }

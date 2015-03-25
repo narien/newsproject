@@ -50,15 +50,34 @@ void PMServer::listArt(const std::shared_ptr<Connection>& conn) {
   }
 }
 
+PMServer::getArt(std::shared_ptr<Connection>& conn){
+    int group = getNumP(conn);
+    int art = getNumP(conn);
+    unsigned char end = conn.read();
+    if(end == Protocol::COM_END){
+        //database.getArt
+    } else {
+        //felmeddelande
+        
+    }
+}
+
+int PMServer::getNumP(const std::shared_ptr<Connection>& conn){
+    unsigned char numPar = conn->read();
+    int num;
+    if (numPar == Protocol::PAR_NUM) {
+        num = readNumber(conn);
+    } else {
+        //felmeddelande
+    }
+    return num;
+}
+
 string PMServer::getStringP(const std::shared_ptr<Connection>& conn) {
   unsigned char stringPar = conn->read();
   string s;
   if (stringPar == Protocol::PAR_STRING) {
-    unsigned char byte1 = conn->read();
-    unsigned char byte2 = conn->read();
-    unsigned char byte3 = conn->read();
-    unsigned char byte4 = conn->read();
-    int nbrOfBytes = (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
+    int nbrOfBytes = readNumber(conn);
     for (int i = 0; i < nbrOfBytes; ++i) {
       s += conn->read();
     }
@@ -68,6 +87,13 @@ string PMServer::getStringP(const std::shared_ptr<Connection>& conn) {
   return s;
 }
 
+int readNumber(const shared_ptr<Connection>& conn) {
+    unsigned char byte1 = conn->read();
+    unsigned char byte2 = conn->read();
+    unsigned char byte3 = conn->read();
+    unsigned char byte4 = conn->read();
+    return (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
+}
 
 int main(int argc, char* argv[]){
     if (argc != 2) {

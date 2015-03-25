@@ -8,28 +8,47 @@ DatabaseMem::DatabaseMem() {
 	newsgrp_cntr = 1;
 }
 
-bool DatabaseMem::insert_newsgroup(string title) {
+bool DatabaseMem::insert_newsgroup(string& title) {
 
-	Newsgroup tmp_grp = Newsgroup();
+	if (title.empty()) {
 
-	tmp_grp.title = title;
+		Newsgroup tmp_grp = Newsgroup();
+		tmp_grp.title = title;
+		storage.insert({newsgrp_cntr, tmp_grp});
 
-	storage.insert({newsgrp_cntr, tmp_grp});
+		newsgrp_cntr++;
 
-	newsgrp_cntr++;
+		return true;
+	}
 
-	return false;
-
+	else {
+		return false;
+	}
 }
 
-bool DatabaseMem::insert_article(string& newsgroup_name, string& article_title, string& article_author, string& article_text) {
+bool DatabaseMem::insert_article(int& newsgroup_id, string& article_title, string& article_author, string& article_text) {
 
 	return false;
 }
 
-bool DatabaseMem::remove(string name) {
 
-	return false;
+bool DatabaseMem::remove_newsgroup(int& newsgroup_id) {
+
+/*		if (title != NULL) {
+
+		storage.remove();
+
+
+		return true;
+	}
+
+	else {
+		return false;
+	}*/
+}
+
+bool DatabaseMem::remove_article(int& newsgroup_id, int& article_id) {
+
 }
 
 

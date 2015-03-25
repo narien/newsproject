@@ -23,7 +23,8 @@ public:
     void deleteArt(const std::shared_ptr<Connection>& conn);
     
     string getString(const std::shared_ptr<Connection>& conn);
-    
+    int getNumP(const std::shared_ptr<Connection>& conn);
+    int readNumber(const std::shared_ptr<Connection>& conn);
     
 private:
 };

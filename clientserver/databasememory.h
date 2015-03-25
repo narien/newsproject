@@ -1,32 +1,20 @@
-//Database in memeory
+//Database in memory
 
 #ifndef DATABASEMEM_H
 #define DATABASEMEM_H
+
+#include "databaseinterface.h"
+#include "newsgroup.h"
 
 #include <map>
 #include <string>
 
 using namespace std;
 
-//potentially move later
-struct Article {
-
-		string title;
-		string author;
-		string text;
-};
-
-struct Newsgroup {
-
-		int article_cntr = 1;
-		string title;
-		map<int, Article> articles;
-};
-
-class DatabaseMem {
+class DatabaseMemory : DatabaseInterface {
 	public:
-		DatabaseMem();
-		~DatabaseMem();
+		DatabaseMemory();
+		~DatabaseMemory();
 		bool insert_newsgroup(string& title);
 		bool insert_article(int& newsgroup_id, string& article_title, string& article_author, string& article_text);
 		bool remove_newsgroup(int& newsgroup_id);

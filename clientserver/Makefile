@@ -26,7 +26,7 @@ libclientserver.a: connection.o server.o
 	ar rv libclientserver.a  connection.o server.o
 	ranlib libclientserver.a
 
-database_test: databasemem.o
+database_test: databasememory.o
 
 # Phony targets
 .PHONY: all clean

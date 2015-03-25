@@ -21,12 +21,38 @@ void PMServer::listNG(const std::shared_ptr<Connection>& conn) {
 }
 
 void PMServer::createNG(const std::shared_ptr<Connection>& conn) {
-  string title = getStringP;
+  string title = getStringP(conn);
+  unsigned char endByte = conn->read();
+  if (endByte == Protocol::COM_END) {
+    //skapa nyhetsgruppen och lägg till i databasen
+  } else {
+    //felmeddelande
+  }
+}
+
+void PMServer::deleteNG(const std::shared_ptr<Connection>& conn) {
+  int groupID = getNumP(conn);
+  unsigned char endByte = conn->read();
+  if (endByte == Protocol::COM_END) {
+    //ta bort nyhetsgruppen
+  } else {
+    //felmeddelande
+  }
+}
+
+void PMServer::listArt(const std::shared_ptr<Connection>& conn) {
+  int groupID = getNumP(conn);
+  unsigned char endByte = conn->read();
+  if (endByte == Protocol::COM_END) {
+    //lista
+  } else {
+    //felmeddelande
+  }
 }
 
 string PMServer::getStringP(const std::shared_ptr<Connection>& conn) {
   unsigned char stringPar = conn->read();
-  string title;
+  string s;
   if (stringPar == Protocol::PAR_STRING) {
     unsigned char byte1 = conn->read();
     unsigned char byte2 = conn->read();
@@ -34,11 +60,12 @@ string PMServer::getStringP(const std::shared_ptr<Connection>& conn) {
     unsigned char byte4 = conn->read();
     int nbrOfBytes = (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
     for (int i = 0; i < nbrOfBytes; ++i) {
-      title += conn->read();
+      s += conn->read();
     }
   } else {
     //felmeddelande
   }
+  return s;
 }
 
 

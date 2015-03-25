@@ -12,7 +12,17 @@ PMServer::PMServer(int port){}
 
 
 
+PMServer::getArt(std::shared_ptr<Connection> conn){
+    unsigned char group = conn.read();
+    unsigned char art = conn.read();
+    unsigned char end = conn.read();
+    if(end == Protocol::COM_END){
+        
+    } else {
+        //felmeddelande
 
+    }
+}
 
 int main(int argc, char* argv[]){
     if (argc != 2) {

@@ -14,13 +14,16 @@
 class PMServer {
 public:
     PMServer(int port);
-    listNG();
-    createNG();
-    deleteNG();
-    listArt();
-    readArt();
-    writeArt();
-    deleteArt();
+    void listNG(const std::shared_ptr<Connection>& conn);
+    void createNG(const std::shared_ptr<Connection>& conn);
+    void deleteNG(const std::shared_ptr<Connection>& conn);
+    void listArt(const std::shared_ptr<Connection>& conn);
+    void getArt(const std::shared_ptr<Connection>& conn);
+    void createArt(const std::shared_ptr<Connection>& conn);
+    void deleteArt(const std::shared_ptr<Connection>& conn);
+    
+    string getString(const std::shared_ptr<Connection>& conn);
+    
     
 private:
 };

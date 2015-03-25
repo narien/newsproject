@@ -7,10 +7,22 @@
 //
 
 #include "pmserver.h"
+#include "protocol.h"
 
 PMServer::PMServer(int port){}
 
+void PMServer::listNG(const std::shared_ptr<Connection>& conn) {
+  unsigned char endByte = conn->read();
+  if (endByte == Protocol::COM_END) {
+    //database.listnewsgrops
+  } else {
+    //felmeddelande
+  }
+}
 
+void PMServer::createNG(const std::shared_ptr<Connection>& conn) {
+  string title = getStringP;
+}
 
 PMServer::getArt(std::shared_ptr<Connection> conn){
     unsigned char group = conn.read();
@@ -20,8 +32,25 @@ PMServer::getArt(std::shared_ptr<Connection> conn){
         
     } else {
         //felmeddelande
-
+        
     }
+}
+
+string PMServer::getStringP(const std::shared_ptr<Connection>& conn) {
+  unsigned char stringPar = conn->read();
+  string title;
+  if (stringPar == Protocol::PAR_STRING) {
+    unsigned char byte1 = conn->read();
+    unsigned char byte2 = conn->read();
+    unsigned char byte3 = conn->read();
+    unsigned char byte4 = conn->read();
+    int nbrOfBytes = (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
+    for (int i = 0; i < nbrOfBytes; ++i) {
+      title += conn->read();
+    }
+  } else {
+    //felmeddelande
+  }
 }
 
 int main(int argc, char* argv[]){
@@ -48,8 +77,32 @@ int main(int argc, char* argv[]){
         auto conn = server.waitForActivity();
         if(conn != nullptr){
             try {
-	      string receivedMessage = readMessage(conn);
-	      
+	      unsigned char command = conn->read();
+	      switch (command) {
+	      case Protocol::COM_LIST_NG : 
+		pms.listNG(conn);
+		break;
+	      case Protocol::COM_CREATE_NG :
+		pms.createNG(conn);
+		break;
+	      case Protocol::COM_DELETE_NG : 
+		pms.deleteNG(conn);
+		break;
+	      case Protocol::COM_LIST_ART :
+		pms.listArt(conn);
+		break;
+	      case Protocol::COM_CREATE_ART : 
+		pms.createArt(conn);
+		break;
+	      case Protocol::COM_DELETE_ART :
+		pms.deleteArt(conn);
+		break;
+	      case Protocol::COM_GET_ART : 
+		pms.getArt(conn);
+		break;
+	      default :
+		//todo felmeddelande till klienten
+		break;
             } catch (ConnectionClosedException&) {
                 server.deregisterConnection(conn);
                 cout << "Client closed connection" << endl;

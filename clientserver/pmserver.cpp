@@ -38,7 +38,8 @@ int main(int argc, char* argv[]){
         auto conn = server.waitForActivity();
         if(conn != nullptr){
             try {
-                
+	      string receivedMessage = readMessage(conn);
+	      
             } catch (ConnectionClosedException&) {
                 server.deregisterConnection(conn);
                 cout << "Client closed connection" << endl;

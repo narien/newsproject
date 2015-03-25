@@ -21,7 +21,33 @@ void PMServer::listNG(const std::shared_ptr<Connection>& conn) {
 }
 
 void PMServer::createNG(const std::shared_ptr<Connection>& conn) {
-  string title = getStringP;
+  string title = getStringP(conn);
+  unsigned char endByte = conn->read();
+  if (endByte == Protocol::COM_END) {
+    //skapa nyhetsgruppen och lägg till i databasen
+  } else {
+    //felmeddelande
+  }
+}
+
+void PMServer::deleteNG(const std::shared_ptr<Connection>& conn) {
+  int groupID = getNumP(conn);
+  unsigned char endByte = conn->read();
+  if (endByte == Protocol::COM_END) {
+    //ta bort nyhetsgruppen
+  } else {
+    //felmeddelande
+  }
+}
+
+void PMServer::listArt(const std::shared_ptr<Connection>& conn) {
+  int groupID = getNumP(conn);
+  unsigned char endByte = conn->read();
+  if (endByte == Protocol::COM_END) {
+    //lista
+  } else {
+    //felmeddelande
+  }
 }
 
 PMServer::getArt(std::shared_ptr<Connection>& conn){
@@ -49,15 +75,16 @@ int PMServer::getNumP(const std::shared_ptr<Connection>& conn){
 
 string PMServer::getStringP(const std::shared_ptr<Connection>& conn) {
   unsigned char stringPar = conn->read();
-  string title;
+  string s;
   if (stringPar == Protocol::PAR_STRING) {
     int nbrOfBytes = readNumber(conn);
     for (int i = 0; i < nbrOfBytes; ++i) {
-      title += conn->read();
+      s += conn->read();
     }
   } else {
     //felmeddelande
   }
+  return s;
 }
 
 int readNumber(const shared_ptr<Connection>& conn) {

@@ -1,4 +1,4 @@
-//Database on memeory
+//Database in memeory
 
 #ifndef DATABASEMEM_H
 #define DATABASEMEM_H
@@ -27,9 +27,10 @@ class DatabaseMem {
 	public:
 		DatabaseMem();
 		~DatabaseMem();
-		bool insert_newsgroup(string title);
-		bool insert_article(string& newsgroup_name, string& article_title, string& article_author, string& article_text);
-		bool remove(string name);
+		bool insert_newsgroup(string& title);
+		bool insert_article(int& newsgroup_id, string& article_title, string& article_author, string& article_text);
+		bool remove_newsgroup(int& newsgroup_id);
+		bool remove_article(int& newsgroup_id, int& article_id);
 
 	private:
 		int newsgrp_cntr; //unique id number

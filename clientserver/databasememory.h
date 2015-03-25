@@ -15,14 +15,14 @@ class DatabaseMemory : DatabaseInterface {
 	public:
 		DatabaseMemory();
 		~DatabaseMemory();
-		bool insert_newsgroup(string& title);
-		bool insert_article(int& newsgroup_id, string& article_title, string& article_author, string& article_text);
-		bool remove_newsgroup(int& newsgroup_id);
-		bool remove_article(int& newsgroup_id, int& article_id);
+		bool insert_newsgroup(string& title) override;
+		bool insert_article(int& newsgroup_id, string& article_title, string& article_author, string& article_text) override;
+		bool remove_newsgroup(int& newsgroup_id) override;
+		bool remove_article(int& newsgroup_id, int& article_id) override;
 
 	private:
 		int newsgrp_cntr; //unique id number
-		map<int, Newsgroup> storage;
+		map<int, Newsgroup> newsgroups;
 };
 
 #endif

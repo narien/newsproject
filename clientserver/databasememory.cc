@@ -53,6 +53,7 @@ bool DatabaseMemory::remove_newsgroup(int& newsgroup_id) {
 
 	if(it != newsgroups.end()) {
 		newsgroups.erase(it);
+        return true;
 	}
 	else {
 		return false;

@@ -53,7 +53,6 @@ bool DatabaseMemory::insertArticle(int& newsgroup_id, string article_title, stri
 	}
 }
 
-
 bool DatabaseMemory::removeNewsgroup(int& newsgroup_id) {
 
 	//find newsgroup

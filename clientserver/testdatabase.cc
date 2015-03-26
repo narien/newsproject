@@ -3,6 +3,7 @@
 #define TEST_DATABASE_H
 
 #include "databasememory.h"
+#include "databasedisk.h"
 
 #include <iostream>
 #include <string>
@@ -42,5 +43,7 @@ int main() {
 	for (auto i : v) {
 		cout << "id: " << i.first << " title: " << i.second << endl;
 	}
+
+	cout << "TEST DISK DATABASE" << endl << endl;
 }
 #endif

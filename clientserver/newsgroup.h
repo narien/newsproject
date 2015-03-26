@@ -10,7 +10,7 @@ using namespace std;
 
 struct Article {
 
-		int id;
+		int id; //unique id number
 		string title;
 		string author;
 		string text;
@@ -18,7 +18,7 @@ struct Article {
 
 struct Newsgroup {
 
-		int id;
+		int id; //unique id number
 		int article_cntr = 1;
 		string title;
 		vector<Article> articles;

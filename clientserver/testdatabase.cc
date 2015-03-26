@@ -45,5 +45,7 @@ int main() {
 	}
 
 	cout << "TEST DISK DATABASE" << endl << endl;
+
+	DatabaseDisk dbdisk;
 }
 #endif

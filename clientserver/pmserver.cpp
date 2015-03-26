@@ -165,7 +165,24 @@ void PMServer::getArt(std::shared_ptr<Connection>& conn){
     unsigned char endByte = conn.read();
     if(end == Protocol::COM_END){
         //database.getArt
-        
+        string title;
+        string author;
+        string text;
+        int result = db.get_article(group, art, title, author, text);
+        if (result == 1){
+            conn->write(Protocol::ANS_ACK);
+            writeStringP(conn, title);
+            writeStringP(conn, author);
+            writeStringP(conn, text);
+        } else {
+            conn->write(Protocol::ANS_NAK);
+            if (result == 0){
+                conn->write(Protocol::ERR_NG_DOES_NOT_EXIST);
+            } else {
+                conn->write(Protocol::ERR_ART_DOES_NOT_EXIST);
+            }
+        }
+        conn->write(Protocol::ANS_END);
     } else {
         //felmeddelande
         

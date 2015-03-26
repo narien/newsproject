@@ -32,6 +32,14 @@ void PMServer::createNG(const std::shared_ptr<Connection>& conn) {
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
     //skapa nyhetsgruppen och lägg till i databasen
+      conn->write(Protocol::ANS_CREATE_NG);
+      if(db.insert_newsgroup(title)){
+          conn->write(Protocol::ANS_ACK);
+      } else {
+          conn->write(Protocol::ANS_NAK);
+          conn->write(Protocol::ERR_NG_ALREADY_EXISTS);
+      }
+      conn->write(Protocol::ANS_END);
   } else {
     //felmeddelande
   }

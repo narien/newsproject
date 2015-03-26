@@ -14,10 +14,14 @@ PMServer::PMServer(int port){}
 void PMServer::listNG(const std::shared_ptr<Connection>& conn) {
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
-    //database.listnewsgrops
       Vector<pair<int, string>> groups = db.listNewsgrops();
       conn->write(Protocol::ANS_LIST_NG);
       writeNumP(groups.size());
+      for(Pair p : groups) {
+          writeNumP(conn, p.first);
+          writeStringP(conn, p.second);
+      }
+      conn->write(Protocol::ANS_END);
   } else {
     //felmeddelande
   }

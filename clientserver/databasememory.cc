@@ -39,7 +39,7 @@ bool DatabaseMemory::insertArticle(int& newsgroup_id, string article_title, stri
 	//find newsgroup
 	auto it = find_if(newsgroups.begin(), newsgroups.end(), [newsgroup_id] (const Newsgroup& ng) { return ng.id == newsgroup_id; });
 
-	if (!article_title.empty() && it == newsgroups.end()) {
+	if (!article_title.empty() && it != newsgroups.end()) {
 
 		Article tmp_article = {it->article_cntr, article_title, article_author, article_text};
 		it->article_cntr++;

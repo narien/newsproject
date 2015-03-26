@@ -15,10 +15,10 @@ class DatabaseMemory : DatabaseInterface {
 	public:
 		DatabaseMemory();
 		~DatabaseMemory();
-		bool insert_newsgroup(string& title) override;
-		bool insert_article(int& newsgroup_id, string& article_title, string& article_author, string& article_text) override;
-		bool remove_newsgroup(int& newsgroup_id) override;
-		int remove_article(int& newsgroup_id, int& article_id) override;
+		bool insertNewsgroup(string& title) override;
+		bool insertArticle(int& newsgroup_id, string& article_title, string& article_author, string& article_text) override;
+		bool removeNewsgroup(int& newsgroup_id) override;
+		int removeArticle(int& newsgroup_id, int& article_id) override;
 
 	private:
 		int newsgrp_cntr; //unique id number

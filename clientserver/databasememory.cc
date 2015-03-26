@@ -10,7 +10,7 @@ DatabaseMemory::DatabaseMemory() {
 	newsgrp_cntr = 1;
 }
 
-bool DatabaseMemory::insert_newsgroup(string& title) {
+bool DatabaseMemory::insertNewsgroup(string& title) {
 
 	//check if already exist
 	auto it = find_if(newsgroups.begin(), newsgroups.end(), [title] (const pair<int, Newsgroup>& m) { return m.second.title == title; });
@@ -30,7 +30,7 @@ bool DatabaseMemory::insert_newsgroup(string& title) {
 	}
 }
 
-bool DatabaseMemory::insert_article(int& newsgroup_id, string& article_title, string& article_author, string& article_text) {
+bool DatabaseMemory::insertArticle(int& newsgroup_id, string& article_title, string& article_author, string& article_text) {
 
 	if (newsgroup_id>0 && !article_title.empty()) {
 
@@ -47,7 +47,7 @@ bool DatabaseMemory::insert_article(int& newsgroup_id, string& article_title, st
 }
 
 
-bool DatabaseMemory::remove_newsgroup(int& newsgroup_id) {
+bool DatabaseMemory::removeNewsgroup(int& newsgroup_id) {
 
 	auto it = newsgroups.find(newsgroup_id);
 
@@ -60,12 +60,13 @@ bool DatabaseMemory::remove_newsgroup(int& newsgroup_id) {
 	}
 }
 
-int DatabaseMemory::remove_article(int& newsgroup_id, int& article_id) {
+int DatabaseMemory::removeArticle(int& newsgroup_id, int& article_id) {
 
 	auto it = newsgroups.find(newsgroup_id);
 
 	if(it != newsgroups.end()) {
-        if(/**todo**/){
+		/**todo**/
+        if(true){
             return 1;
         } else {
             return -1;

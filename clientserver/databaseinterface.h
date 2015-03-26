@@ -11,9 +11,11 @@ using namespace std;
 
 class DatabaseInterface {
 	public:
-		virtual bool insert_newsgroup(string& title);
-		virtual bool insert_article(int& newsgroup_id, string& article_title, string& article_author, string& article_text);
-		virtual bool remove_newsgroup(int& newsgroup_id);
-		virtual bool remove_article(int& newsgroup_id, int& article_id);
+		virtual bool insert_newsgroup(string& title) = 0;
+		virtual bool insert_article(int& newsgroup_id, string& article_title, string& article_author, string& article_text) = 0;
+		virtual bool remove_newsgroup(int& newsgroup_id) = 0;
+		virtual bool remove_article(int& newsgroup_id, int& article_id) = 0;
+    virtual vector<Newsgroup> ListNewsgroups() = 0;
+    virtual vector<Article> listArticles(int& newsgroup_id) = 0;
 };
 #endif

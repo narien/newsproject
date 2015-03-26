@@ -6,6 +6,8 @@
 #include "newsgroup.h"
 
 #include <string>
+#include <utility>
+using std::pair;
 
 using namespace std;
 
@@ -15,7 +17,7 @@ class DatabaseInterface {
 		virtual bool insert_article(int& newsgroup_id, string& article_title, string& article_author, string& article_text) = 0;
 		virtual bool remove_newsgroup(int& newsgroup_id) = 0;
 		virtual bool remove_article(int& newsgroup_id, int& article_id) = 0;
-    virtual vector<Newsgroup> ListNewsgroups() = 0;
+    virtual vector<pair<int, string>> ListNewsgroups() = 0;
     virtual vector<Article> listArticles(int& newsgroup_id) = 0;
 };
 #endif

@@ -15,6 +15,8 @@ void PMServer::listNG(const std::shared_ptr<Connection>& conn) {
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
     //database.listnewsgrops
+      Vector<Newsgroup> groups = db.listNewsgrops();
+      conn->write(Protocol::ANS_LIST_NG);
   } else {
     //felmeddelande
   }
@@ -115,12 +117,19 @@ string PMServer::getStringP(const std::shared_ptr<Connection>& conn) {
   return s;
 }
 
-int readNumber(const shared_ptr<Connection>& conn) {
+int PMServer::readNumber(const shared_ptr<Connection>& conn) {
     unsigned char byte1 = conn->read();
     unsigned char byte2 = conn->read();
     unsigned char byte3 = conn->read();
     unsigned char byte4 = conn->read();
     return (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
+}
+
+void PMServer::writeNumber(const Connection& conn, int value) {
+    conn.write((value >> 24) & 0xFF);
+    conn.write((value >> 16) & 0xFF);
+    conn.write((value >> 8)	 & 0xFF);
+    conn.write(value & 0xFF);
 }
 
 int main(int argc, char* argv[]){

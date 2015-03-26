@@ -84,7 +84,6 @@ void PMServer::listArt(const std::shared_ptr<Connection>& conn) {
   int groupID = getNumP(conn);
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
-    //lista artiklarna i nyhetsgruppen med id groupID
       vector<pair<int, string>> articles;
       conn->write(Protocol::ANS_LIST_ART);
       if(db.listArticles(groupID, articles)){
@@ -104,13 +103,24 @@ void PMServer::listArt(const std::shared_ptr<Connection>& conn) {
   }
 }
 
+/**
+ COM_CREATE_ART num_p string_p string_p string_p COM_END
+ ANS_CREATE_ART [ANS_ACK | ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
+ **/
 void PMServer::createArt(const std::shared_ptr<Connection>& conn) {
   int groupID = getNumP(conn);
   string title = getStringP(conn);
   string author = getStringP(conn);
   string text = getStringP(conn);
   if (endByte == Protocol::COM_END) {
-    //skapa artikeln och lägg i databasen
+      if(db.insert_article(groupID, title, author, text)){
+          conn->write(Protocol::ANS_CREATE_ART);
+          conn->write(Protocol::ANS_ACK);
+      } else {
+          conn->write(Protocol::ANS_NAK);
+          conn->write(Protocol::ERR_NG_DOES_NOT_EXIST);
+      }
+      conn->write(Protocol::ANS_END);
   } else {
     //felmeddelande
   }

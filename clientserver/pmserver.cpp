@@ -45,11 +45,23 @@ void PMServer::createNG(const std::shared_ptr<Connection>& conn) {
   }
 }
 
+/**
+ COM_DELETE_NG num_p COM_END
+ ANS_DELETE_NG [ANS_ACK | ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
+ **/
 void PMServer::deleteNG(const std::shared_ptr<Connection>& conn) {
   int groupID = getNumP(conn);
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
     //ta bort nyhetsgruppen
+      conn->write(Protocol::ANS_DELETE_NG);
+      if(db.remove_newsgroup(groupID)){
+          conn->write(Protocol::ANS_ACK);
+      } else {
+          conn->write(Protocol::ANS_NAK);
+          conn->write(Protocol:: ERR_NG_DOES_NOT_EXIST);
+      }
+      conn->write(Protocol::ANS_END);
   } else {
     //felmeddelande
   }

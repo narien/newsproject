@@ -4,12 +4,13 @@
 #define NEWSGROUP_H
 
 #include <string>
-#include <map>
+#include <vector>
 
 using namespace std;
 
 struct Article {
 
+		int id;
 		string title;
 		string author;
 		string text;
@@ -17,9 +18,9 @@ struct Article {
 
 struct Newsgroup {
 
+		int id;
 		int article_cntr = 1;
 		string title;
-		map<int, Article> articles;
+		vector<Article> articles;
 };
-
 #endif

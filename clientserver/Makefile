@@ -17,7 +17,7 @@ CXXFLAGS += -g
 #CPPFLAGS =  -stdlib=libc++
 #CXXFLAGS += -stdlib=libc++
 
-all: libclientserver.a database_test
+all: libclientserver.a testdatabase
 
 # Create the library; ranlib is for Darwin (OS X) and maybe other systems.
 # Doesn't seem to do any damage on other systems.
@@ -26,7 +26,7 @@ libclientserver.a: connection.o server.o
 	ar rv libclientserver.a  connection.o server.o
 	ranlib libclientserver.a
 
-database_test: databasememory.o
+testdatabase: databasememory.o testdatabase.o
 
 # Phony targets
 .PHONY: all clean

@@ -1,5 +1,7 @@
 //Interface to database, intended to be implemented by memory and disk databases
 
+//just a test
+
 #ifndef DATABASE_INTERFACE_H
 #define DATABASE_INTERFACE_H
 

@@ -28,6 +28,8 @@ public:
     void writeNumP(const Conn conn);
     int readNumber(const Conn conn);
     void writeNumber(const Conn conn);
+    void writeStringP(const Conn conn, string s);
+
     
 private:
 };

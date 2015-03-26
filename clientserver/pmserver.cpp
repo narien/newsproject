@@ -105,7 +105,7 @@ int PMServer::getNumP(const std::shared_ptr<Connection>& conn){
 }
 
 void PMserver::writeNumP(const std::shared_ptr<Connection>& conn, int num){
-    conn.write(Protocol::PAR_NUM);
+    conn->write(Protocol::PAR_NUM);
     writeNumber(conn, num);
 }
 
@@ -121,6 +121,14 @@ string PMServer::getStringP(const std::shared_ptr<Connection>& conn) {
     //felmeddelande
   }
   return s;
+}
+
+void PMServer::writeStringP(const std::shared_ptr<Connection>& conn, string s){
+    conn->write(Protocol::PAR_STRING);
+    writeNumber(s.size());
+    for (char c : s){
+        conn->write(c);
+    }
 }
 
 int PMServer::readNumber(const shared_ptr<Connection>& conn) {

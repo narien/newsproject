@@ -136,7 +136,6 @@ void PMServer::deleteArt(){
     int art = getNumP(conn);
     unsigned char endByte = conn->read();
     if(endByte == Protocoll::COM_END){
-        //database.deleteArt
         int result = db.delete_article(group, art);
         conn->write(Protocol::ANS_DELETE_ART);
         if (result == 1) {
@@ -155,12 +154,18 @@ void PMServer::deleteArt(){
     }
 }
 
+/**
+ COM_GET_ART num_p num_p COM_END
+ ANS_GET_ART [ANS_ACK string_p string_p string_p |
+ ANS_NAK [ERR_NG_DOES_NOT_EXIST | ERR_ART_DOES_NOT_EXIST]] ANS_END
+ **/
 void PMServer::getArt(std::shared_ptr<Connection>& conn){
     int group = getNumP(conn);
     int art = getNumP(conn);
     unsigned char endByte = conn.read();
     if(end == Protocol::COM_END){
         //database.getArt
+        
     } else {
         //felmeddelande
         

@@ -18,7 +18,7 @@ class DatabaseMemory : DatabaseInterface {
 		bool insert_newsgroup(string& title) override;
 		bool insert_article(int& newsgroup_id, string& article_title, string& article_author, string& article_text) override;
 		bool remove_newsgroup(int& newsgroup_id) override;
-		bool remove_article(int& newsgroup_id, int& article_id) override;
+		int remove_article(int& newsgroup_id, int& article_id) override;
 
 	private:
 		int newsgrp_cntr; //unique id number

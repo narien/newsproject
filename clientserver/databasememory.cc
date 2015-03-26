@@ -59,15 +59,19 @@ bool DatabaseMemory::remove_newsgroup(int& newsgroup_id) {
 	}
 }
 
-bool DatabaseMemory::remove_article(int& newsgroup_id, int& article_id) {
+int DatabaseMemory::remove_article(int& newsgroup_id, int& article_id) {
 
 	auto it = newsgroups.find(newsgroup_id);
 
 	if(it != newsgroups.end()) {
-		
+        if(/**todo**/){
+            return 1;
+        } else {
+            return -1;
+        }
 	}
 	else {
-		return false;
+		return 0;
 	}
 }
 

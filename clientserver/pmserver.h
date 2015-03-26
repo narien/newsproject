@@ -32,6 +32,7 @@ public:
 
     
 private:
+    DatabaseInterface db;
 };
 
 #endif /* defined(____pmserver__) */

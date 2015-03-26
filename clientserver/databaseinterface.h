@@ -18,6 +18,6 @@ class DatabaseInterface {
 		virtual bool remove_newsgroup(int& newsgroup_id) = 0;
 		virtual bool remove_article(int& newsgroup_id, int& article_id) = 0;
     virtual vector<pair<int, string>> ListNewsgroups() = 0;
-    virtual vector<Article> listArticles(int& newsgroup_id) = 0;
+    virtual bool listArticles(int& newsgroup_id, vector<pair<int, string s>>& articles) = 0;
 };
 #endif

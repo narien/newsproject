@@ -9,8 +9,14 @@
 #include "pmserver.h"
 #include "protocol.h"
 
-PMServer::PMServer(int port){}
+PMServer::PMServer(int port){
+    db = DatabaseMemory();
+}
 
+/**
+ COM_LIST_NG COM_END
+ ANS_LIST_NG num_p [num_p string_p]* ANS_END
+ **/
 void PMServer::listNG(const std::shared_ptr<Connection>& conn) {
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
@@ -27,11 +33,14 @@ void PMServer::listNG(const std::shared_ptr<Connection>& conn) {
   }
 }
 
+/**
+ COM_CREATE_NG string_p COM_END
+ ANS_CREATE_NG [ANS_ACK | ANS_NAK ERR_NG_ALREADY_EXISTS] ANS_END
+ **/
 void PMServer::createNG(const std::shared_ptr<Connection>& conn) {
   string title = getStringP(conn);
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
-    //skapa nyhetsgruppen och lägg till i databasen
       conn->write(Protocol::ANS_CREATE_NG);
       if(db.insert_newsgroup(title)){
           conn->write(Protocol::ANS_ACK);
@@ -53,7 +62,6 @@ void PMServer::deleteNG(const std::shared_ptr<Connection>& conn) {
   int groupID = getNumP(conn);
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
-    //ta bort nyhetsgruppen
       conn->write(Protocol::ANS_DELETE_NG);
       if(db.remove_newsgroup(groupID)){
           conn->write(Protocol::ANS_ACK);
@@ -67,11 +75,30 @@ void PMServer::deleteNG(const std::shared_ptr<Connection>& conn) {
   }
 }
 
+/**
+ COM_LIST_ART num_p COM_END
+ ANS_LIST_ART [ANS_ACK num_p [num_p string_p]* |
+ ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
+ **/
 void PMServer::listArt(const std::shared_ptr<Connection>& conn) {
   int groupID = getNumP(conn);
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
     //lista artiklarna i nyhetsgruppen med id groupID
+      vector<pair<int, string>> articles;
+      conn->write(Protocol::ANS_LIST_ART);
+      if(db.listArticles(groupID, articles)){
+          conn->write(Protocol::ANS_ACK);
+          writeNumP(conn, articles.size());
+          for( Pair p : articles){
+              writeNumP(conn, p.first);
+              writeStringP(conn, p.second);
+          }
+      } else {
+          conn->write(Protocol::ANS_NAK);
+          conn->write(Protocol::ERR_NG_DOES_NOT_EXIST);
+      }
+      conn->write(Protocol::ANS_END);
   } else {
     //felmeddelande
   }

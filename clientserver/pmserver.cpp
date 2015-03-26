@@ -137,6 +137,19 @@ void PMServer::deleteArt(){
     unsigned char endByte = conn->read();
     if(endByte == Protocoll::COM_END){
         //database.deleteArt
+        int result = db.delete_article(group, art);
+        conn->write(Protocol::ANS_DELETE_ART);
+        if (result == 1) {
+            conn->write(Protocol::ANS_ACK);
+        } else {
+            conn->write(Protocol::ANS_NAK);
+            if (result == 0) {
+                conn->write(Protocol::ERR_NG_DOES_NOT_EXIST);
+            } else {
+                conn->write(Protocol::ERR_ART_DOES_NOT_EXIST);
+            }
+        }
+        conn->write(Protocol::ANS_END);
     } else {
         //felmeddelande
     }

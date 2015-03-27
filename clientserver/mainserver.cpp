@@ -27,7 +27,7 @@ MainServer::MainServer(Server& server){
 void MainServer::listNG(const std::shared_ptr<Connection>& conn) {
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
-      Vector<pair<int, string>> groups = db.listNewsgrops();
+      vector<pair<int, string>> groups = db.listNewsgrops();
       conn->write(Protocol::ANS_LIST_NG);
       writeNumP(groups.size());
       for(Pair p : groups) {
@@ -170,7 +170,7 @@ void MainServer::getArt(std::shared_ptr<Connection>& conn){
     int group = getNumP(conn);
     int art = getNumP(conn);
     unsigned char endByte = conn->read();
-    if(end == Protocol::COM_END){
+    if(endByte == Protocol::COM_END){
         //database.getArt
         string title;
         string author;
@@ -257,7 +257,7 @@ int main(int argc, char* argv[]){
     int port = -1;
     try {
         port = std::stoi(argv[1]);
-    } catch (exception& e) {
+    } catch (std::exception& e) {
         cerr << "Wrong port number. " << e.what() << endl;
         exit(1);
     }

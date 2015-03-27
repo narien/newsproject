@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include "server.h"
+#include "databaseinterface.h"
 
 class MainServer {
 public:

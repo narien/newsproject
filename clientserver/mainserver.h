@@ -35,6 +35,7 @@ public:
     
 private:
     DatabaseInterface db;
+    Server& server;
 };
 
 #endif /* defined(____mainserver__) */

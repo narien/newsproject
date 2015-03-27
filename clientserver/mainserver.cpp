@@ -9,6 +9,7 @@
 #include "mainserver.h"
 #include "protocol.h"
 
+#include <iostream>
 #include <utility>
 using std::pair;
 #include <string>
@@ -119,6 +120,7 @@ void MainServer::createArt(const std::shared_ptr<Connection>& conn) {
   string title = getStringP(conn);
   string author = getStringP(conn);
   string text = getStringP(conn);
+  unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
       if(db.insert_article(groupID, title, author, text)){
           conn->write(Protocol::ANS_CREATE_ART);
@@ -250,7 +252,7 @@ void MainServer::writeNumber(const std::shared_ptr<Connection>& conn, int value)
 
 int main(int argc, char* argv[]){
     if (argc != 2) {
-        cerr << "Usage: myserver port-number" << endl;
+        cerr << "Usage: myserver port-number" << std::endl;
         exit(1);
     }
     
@@ -258,13 +260,13 @@ int main(int argc, char* argv[]){
     try {
         port = std::stoi(argv[1]);
     } catch (std::exception& e) {
-        cerr << "Wrong port number. " << e.what() << endl;
+        cerr << "Wrong port number. " << e.what() << std::endl;
         exit(1);
     }
     
     Server server(port);
     if (!server.isReady()) {
-        cerr << "Server initialization error." << endl;
+        cerr << "Server initialization error." << std::endl;
         exit(1);
     }
     MainServer pms(server);
@@ -300,11 +302,11 @@ int main(int argc, char* argv[]){
 		break;
             } catch (ConnectionClosedException&) {
                 server.deregisterConnection(conn);
-                cout << "Client closed connection" << endl;
+                cout << "Client closed connection" << std::endl;
             }
         } else {
             conn = make_shared<connection>();
             server.registerConnection(conn);
-            cout << "New client connects" << endl;
+            cout << "New client connects" << std::endl;
         }
     }

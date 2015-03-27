@@ -12,25 +12,23 @@
 #include <stdio.h>
 #include "server.h"
 
-typedef std::shared_ptr<Connection>& Conn;
-
 class MainServer {
 public:
     MainServer(Server& server);
-    void listNG(const Conn conn);
-    void createNG(const Conn conn);
-    void deleteNG(const Conn conn);
-    void listArt(const Conn conn);
-    void getArt(const Conn conn);
-    void createArt(const Conn conn);
-    void deleteArt(const Conn conn);
+    void listNG(const std::shared_ptr<Connection>& conn);
+    void createNG(const std::shared_ptr<Connection>& conn);
+    void deleteNG(const std::shared_ptr<Connection>& conn);
+    void listArt(const std::shared_ptr<Connection>& conn);
+    void getArt(const std::shared_ptr<Connection>& conn);
+    void createArt(const std::shared_ptr<Connection>& conn);
+    void deleteArt(const std::shared_ptr<Connection>& conn);
     
-    string getString(const Conn conn);
-    int getNumP(const Conn conn);
-    void writeNumP(const Conn conn);
-    int readNumber(const Conn conn);
-    void writeNumber(const Conn conn);
-    void writeStringP(const Conn conn, string s);
+    string getString(const std::shared_ptr<Connection>& conn);
+    int getNumP(const std::shared_ptr<Connection>& conn);
+    void writeNumP(const std::shared_ptr<Connection>& conn);
+    int readNumber(const std::shared_ptr<Connection>& conn);
+    void writeNumber(const std::shared_ptr<Connection>& conn);
+    void writeStringP(const std::shared_ptr<Connection>& conn, string s);
 
     
 private:

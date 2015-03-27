@@ -6,10 +6,10 @@
 //
 //
 
-#include "pmserver.h"
+#include "mainserver.h"
 #include "protocol.h"
 
-PMServer::PMServer(int port){
+MainServer::MainServer(Server& server){
     db = DatabaseMemory();
 }
 
@@ -17,7 +17,7 @@ PMServer::PMServer(int port){
  COM_LIST_NG COM_END
  ANS_LIST_NG num_p [num_p string_p]* ANS_END
  **/
-void PMServer::listNG(const std::shared_ptr<Connection>& conn) {
+void MainServer::listNG(const std::shared_ptr<Connection>& conn) {
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
       Vector<pair<int, string>> groups = db.listNewsgrops();
@@ -29,7 +29,7 @@ void PMServer::listNG(const std::shared_ptr<Connection>& conn) {
       }
       conn->write(Protocol::ANS_END);
   } else {
-    //felmeddelande
+    server.degeristerConnection(conn);
   }
 }
 
@@ -37,7 +37,7 @@ void PMServer::listNG(const std::shared_ptr<Connection>& conn) {
  COM_CREATE_NG string_p COM_END
  ANS_CREATE_NG [ANS_ACK | ANS_NAK ERR_NG_ALREADY_EXISTS] ANS_END
  **/
-void PMServer::createNG(const std::shared_ptr<Connection>& conn) {
+void MainServer::createNG(const std::shared_ptr<Connection>& conn) {
   string title = getStringP(conn);
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
@@ -50,7 +50,7 @@ void PMServer::createNG(const std::shared_ptr<Connection>& conn) {
       }
       conn->write(Protocol::ANS_END);
   } else {
-    //felmeddelande
+    server.degeristerConnection(conn);
   }
 }
 
@@ -58,7 +58,7 @@ void PMServer::createNG(const std::shared_ptr<Connection>& conn) {
  COM_DELETE_NG num_p COM_END
  ANS_DELETE_NG [ANS_ACK | ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
  **/
-void PMServer::deleteNG(const std::shared_ptr<Connection>& conn) {
+void MainServer::deleteNG(const std::shared_ptr<Connection>& conn) {
   int groupID = getNumP(conn);
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
@@ -71,7 +71,7 @@ void PMServer::deleteNG(const std::shared_ptr<Connection>& conn) {
       }
       conn->write(Protocol::ANS_END);
   } else {
-    //felmeddelande
+    server.degeristerConnection(conn);
   }
 }
 
@@ -80,7 +80,7 @@ void PMServer::deleteNG(const std::shared_ptr<Connection>& conn) {
  ANS_LIST_ART [ANS_ACK num_p [num_p string_p]* |
  ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
  **/
-void PMServer::listArt(const std::shared_ptr<Connection>& conn) {
+void MainServer::listArt(const std::shared_ptr<Connection>& conn) {
   int groupID = getNumP(conn);
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
@@ -99,7 +99,7 @@ void PMServer::listArt(const std::shared_ptr<Connection>& conn) {
       }
       conn->write(Protocol::ANS_END);
   } else {
-    //felmeddelande
+    server.degeristerConnection(conn);
   }
 }
 
@@ -107,7 +107,7 @@ void PMServer::listArt(const std::shared_ptr<Connection>& conn) {
  COM_CREATE_ART num_p string_p string_p string_p COM_END
  ANS_CREATE_ART [ANS_ACK | ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
  **/
-void PMServer::createArt(const std::shared_ptr<Connection>& conn) {
+void MainServer::createArt(const std::shared_ptr<Connection>& conn) {
   int groupID = getNumP(conn);
   string title = getStringP(conn);
   string author = getStringP(conn);
@@ -122,7 +122,7 @@ void PMServer::createArt(const std::shared_ptr<Connection>& conn) {
       }
       conn->write(Protocol::ANS_END);
   } else {
-    //felmeddelande
+    server.degeristerConnection(conn);
   }
 }
 
@@ -131,7 +131,7 @@ void PMServer::createArt(const std::shared_ptr<Connection>& conn) {
  ANS_DELETE_ART [ANS_ACK |
  ANS_NAK [ERR_NG_DOES_NOT_EXIST | ERR_ART_DOES_NOT_EXIST]] ANS_END
  **/
-void PMServer::deleteArt(){
+void MainServer::deleteArt(){
     int group = getNumP(conn);
     int art = getNumP(conn);
     unsigned char endByte = conn->read();
@@ -150,7 +150,7 @@ void PMServer::deleteArt(){
         }
         conn->write(Protocol::ANS_END);
     } else {
-        //felmeddelande
+        server.degeristerConnection(conn);
     }
 }
 
@@ -159,7 +159,7 @@ void PMServer::deleteArt(){
  ANS_GET_ART [ANS_ACK string_p string_p string_p |
  ANS_NAK [ERR_NG_DOES_NOT_EXIST | ERR_ART_DOES_NOT_EXIST]] ANS_END
  **/
-void PMServer::getArt(std::shared_ptr<Connection>& conn){
+void MainServer::getArt(std::shared_ptr<Connection>& conn){
     int group = getNumP(conn);
     int art = getNumP(conn);
     unsigned char endByte = conn.read();
@@ -184,12 +184,11 @@ void PMServer::getArt(std::shared_ptr<Connection>& conn){
         }
         conn->write(Protocol::ANS_END);
     } else {
-        //felmeddelande
-        
+      server.deregisterConnection(conn);
     }
 }
 
-int PMServer::getNumP(const std::shared_ptr<Connection>& conn){
+int MainServer::getNumP(const std::shared_ptr<Connection>& conn){
     unsigned char numPar = conn->read();
     int num;
     if (numPar == Protocol::PAR_NUM) {
@@ -205,7 +204,7 @@ void PMserver::writeNumP(const std::shared_ptr<Connection>& conn, int num){
     writeNumber(conn, num);
 }
 
-string PMServer::getStringP(const std::shared_ptr<Connection>& conn) {
+bool MainServer::getStringP(const std::shared_ptr<Connection>& conn, string*) {
   unsigned char stringPar = conn->read();
   string s;
   if (stringPar == Protocol::PAR_STRING) {
@@ -219,7 +218,7 @@ string PMServer::getStringP(const std::shared_ptr<Connection>& conn) {
   return s;
 }
 
-void PMServer::writeStringP(const std::shared_ptr<Connection>& conn, string s){
+void MainServer::writeStringP(const std::shared_ptr<Connection>& conn, string s){
     conn->write(Protocol::PAR_STRING);
     writeNumber(s.size());
     for (char c : s){
@@ -227,7 +226,7 @@ void PMServer::writeStringP(const std::shared_ptr<Connection>& conn, string s){
     }
 }
 
-int PMServer::readNumber(const shared_ptr<Connection>& conn) {
+int MainServer::readNumber(const shared_ptr<Connection>& conn) {
     unsigned char byte1 = conn->read();
     unsigned char byte2 = conn->read();
     unsigned char byte3 = conn->read();
@@ -235,7 +234,7 @@ int PMServer::readNumber(const shared_ptr<Connection>& conn) {
     return (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
 }
 
-void PMServer::writeNumber(const shared_ptr<Connection>& conn, int value) {
+void MainServer::writeNumber(const shared_ptr<Connection>& conn, int value) {
     conn.write((value >> 24) & 0xFF);
     conn.write((value >> 16) & 0xFF);
     conn.write((value >> 8)	 & 0xFF);
@@ -261,7 +260,7 @@ int main(int argc, char* argv[]){
         cerr << "Server initialization error." << endl;
         exit(1);
     }
-    
+    MainServer pms(server);
     while(true){
         auto conn = server.waitForActivity();
         if(conn != nullptr){

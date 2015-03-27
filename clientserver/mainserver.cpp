@@ -138,11 +138,11 @@ void MainServer::createArt(const std::shared_ptr<Connection>& conn) {
  ANS_DELETE_ART [ANS_ACK |
  ANS_NAK [ERR_NG_DOES_NOT_EXIST | ERR_ART_DOES_NOT_EXIST]] ANS_END
  **/
-void MainServer::deleteArt(){
+void MainServer::deleteArt(std::shared_ptr<Connection>& conn){
     int group = getNumP(conn);
     int art = getNumP(conn);
     unsigned char endByte = conn->read();
-    if(endByte == Protocoll::COM_END){
+    if(endByte == Protocol::COM_END){
         int result = db.delete_article(group, art);
         conn->write(Protocol::ANS_DELETE_ART);
         if (result == 1) {

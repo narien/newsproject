@@ -30,7 +30,7 @@ void MainServer::listNG(const std::shared_ptr<Connection>& conn) {
   if (endByte == Protocol::COM_END) {
       vector<pair<int, string>> groups = db.listNewsgrops();
       conn->write(Protocol::ANS_LIST_NG);
-      writeNumP(groups.size());
+      writeNumP(conn, groups.size());
       for(Pair p : groups) {
           writeNumP(conn, p.first);
           writeStringP(conn, p.second);

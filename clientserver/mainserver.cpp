@@ -233,7 +233,7 @@ void MainServer::writeStringP(const std::shared_ptr<Connection>& conn, string s)
     }
 }
 
-int MainServer::readNumber(const shared_ptr<Connection>& conn) {
+int MainServer::readNumber(const std::shared_ptr<Connection>& conn) {
     unsigned char byte1 = conn->read();
     unsigned char byte2 = conn->read();
     unsigned char byte3 = conn->read();
@@ -241,11 +241,11 @@ int MainServer::readNumber(const shared_ptr<Connection>& conn) {
     return (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
 }
 
-void MainServer::writeNumber(const shared_ptr<Connection>& conn, int value) {
-    conn.write((value >> 24) & 0xFF);
-    conn.write((value >> 16) & 0xFF);
-    conn.write((value >> 8)	 & 0xFF);
-    conn.write(value & 0xFF);
+void MainServer::writeNumber(const std::shared_ptr<Connection>& conn, int value) {
+    conn->write((value >> 24) & 0xFF);
+    conn->write((value >> 16) & 0xFF);
+    conn->write((value >> 8)	 & 0xFF);
+    conn->write(value & 0xFF);
 }
 
 int main(int argc, char* argv[]){

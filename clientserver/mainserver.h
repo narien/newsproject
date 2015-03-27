@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include "server.h"
 
-tpedef std::shared_ptr<Connection>& Conn;
+typedef std::shared_ptr<Connection>& Conn;
 
 class MainServer {
 public:

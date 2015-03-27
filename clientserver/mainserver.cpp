@@ -169,7 +169,7 @@ void MainServer::deleteArt(std::shared_ptr<Connection>& conn){
 void MainServer::getArt(std::shared_ptr<Connection>& conn){
     int group = getNumP(conn);
     int art = getNumP(conn);
-    unsigned char endByte = conn.read();
+    unsigned char endByte = conn->read();
     if(end == Protocol::COM_END){
         //database.getArt
         string title;
@@ -256,7 +256,7 @@ int main(int argc, char* argv[]){
     
     int port = -1;
     try {
-        port = stoi(argv[1]);
+        port = std::stoi(argv[1]);
     } catch (exception& e) {
         cerr << "Wrong port number. " << e.what() << endl;
         exit(1);

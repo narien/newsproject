@@ -6,7 +6,6 @@
 #include "databaseinterface.h"
 #include "newsgroup.h"
 
-#include <vector>
 #include <string>
 
 using namespace std;
@@ -25,6 +24,6 @@ class DatabaseDisk : public DatabaseInterface {
 
 	private:
 		int newsgrp_cntr;
-		vector<Newsgroup> newsgroups;
+		const string path = "./db/";
 };
 #endif

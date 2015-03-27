@@ -10,42 +10,42 @@
 
 using namespace std;
 
-int main() {
+void test(DatabaseInterface& dbi) {
 
-	cout << "TEST MEMORY DATABASE" << endl << endl;
+	int a = 1;
+	int b = 2;
+	int c = 3;
+	int d = 4;
 
-	DatabaseMemory dbmem;
-	dbmem.insertNewsgroup("title1");
-	dbmem.insertNewsgroup("title2");
-	dbmem.insertNewsgroup("title2");
-	dbmem.insertNewsgroup("title3");
-	int i = 3;
-	dbmem.removeNewsgroup(i);
+	dbi.insertNewsgroup("title1");
+	dbi.insertNewsgroup("title2");
+	dbi.insertNewsgroup("title2");
+	dbi.insertNewsgroup("title3");
+	dbi.removeNewsgroup(c);
 
 	cout << "Newsgroups:" << endl;
-	for (auto i : dbmem.listNewsgroups()) {
+	for (auto i : dbi.listNewsgroups()) {
 		cout << "id: " << i.first << " title: " << i.second << endl;
 	}
 
 	cout << endl;
 
-	int a = 1;
-	int b = 2;
 	string text1 = "text1";
 	string text2 = "text2";
 
 
-	dbmem.insertArticle(a, "atitle1", "author1", text1);
-	dbmem.insertArticle(a, "atitle2", "author2", text2);
-	dbmem.insertArticle(a, "atitle3", "author3", text2);
-	dbmem.insertArticle(a, "atitle4", "author4", text2);
+	dbi.insertArticle(a, "atitle1", "author1", text1);
+	dbi.insertArticle(a, "atitle2", "author2", text2);
+	dbi.insertArticle(a, "atitle3", "author3", text2);
+	dbi.insertArticle(a, "atitle4", "author4", text2);
 
-	dbmem.removeArticle(a, b);
+	dbi.removeArticle(a, b);
 
 
 	cout << "Articles in Newsgroup " << a << ":" << endl;
 	vector<pair<int, string>> v;
-	dbmem.listArticles(a, v);
+	dbi.listArticles(a, v);
+
 	for (auto i : v) {
 		cout << "id: " << i.first << " title: " << i.second << endl;
 	}
@@ -56,16 +56,21 @@ int main() {
 	string getAuthor;
 	string getText;
 
-	int c = 4;
+	dbi.getArticle(a, d, getTitle, getAuthor, getText);
 
-	dbmem.getArticle(a, c, getTitle, getAuthor, getText);
+	cout << "id: " << b << " Title: " << getTitle << " Author: " << getAuthor << " Text: " << getText << endl << endl;
+}
 
-	cout << "id: " << b << " Title: " << getTitle << " Author: " << getAuthor << " Text: " << getText << endl;
+int main() {
 
-	cout << endl;
+	cout << "---TEST MEMORY DATABASE---" << endl << endl;
 
-	cout << "TEST DISK DATABASE" << endl << endl;
+	DatabaseMemory dbmem;
+	test(dbmem);
+
+	cout << "---TEST DISK DATABASE---" << endl << endl;
 
 	DatabaseDisk dbdisk;
+	test(dbdisk);
 }
 #endif

@@ -27,7 +27,7 @@ public:
     int getNumP(const std::shared_ptr<Connection>& conn);
     void writeNumP(const std::shared_ptr<Connection>& conn, int i);
     int readNumber(const std::shared_ptr<Connection>& conn);
-    void writeNumber(const std::shared_ptr<Connection>& conn);
+    void writeNumber(const std::shared_ptr<Connection>& conn, int i);
     void writeStringP(const std::shared_ptr<Connection>& conn, string s);
 
     

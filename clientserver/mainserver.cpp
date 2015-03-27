@@ -227,7 +227,7 @@ bool MainServer::getStringP(const std::shared_ptr<Connection>& conn, string*) {
 
 void MainServer::writeStringP(const std::shared_ptr<Connection>& conn, string s){
     conn->write(Protocol::PAR_STRING);
-    writeNumber(s.size());
+    writeNumber(conn, s.size());
     for (char c : s){
         conn->write(c);
     }

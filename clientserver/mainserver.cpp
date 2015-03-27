@@ -36,7 +36,7 @@ void MainServer::listNG(const std::shared_ptr<Connection>& conn) {
       }
       conn->write(Protocol::ANS_END);
   } else {
-    server.degeristerConnection(conn);
+    server.deregisterConnection(conn);
   }
 }
 
@@ -57,7 +57,7 @@ void MainServer::createNG(const std::shared_ptr<Connection>& conn) {
       }
       conn->write(Protocol::ANS_END);
   } else {
-    server.degeristerConnection(conn);
+    server.deregisterConnection(conn);
   }
 }
 
@@ -78,7 +78,7 @@ void MainServer::deleteNG(const std::shared_ptr<Connection>& conn) {
       }
       conn->write(Protocol::ANS_END);
   } else {
-    server.degeristerConnection(conn);
+    server.deregisterConnection(conn);
   }
 }
 
@@ -106,7 +106,7 @@ void MainServer::listArt(const std::shared_ptr<Connection>& conn) {
       }
       conn->write(Protocol::ANS_END);
   } else {
-    server.degeristerConnection(conn);
+    server.deregisterConnection(conn);
   }
 }
 
@@ -129,7 +129,7 @@ void MainServer::createArt(const std::shared_ptr<Connection>& conn) {
       }
       conn->write(Protocol::ANS_END);
   } else {
-    server.degeristerConnection(conn);
+    server.deregisterConnection(conn);
   }
 }
 
@@ -157,7 +157,7 @@ void MainServer::deleteArt(){
         }
         conn->write(Protocol::ANS_END);
     } else {
-        server.degeristerConnection(conn);
+        server.deregisterConnection(conn);
     }
 }
 

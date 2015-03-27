@@ -201,7 +201,7 @@ int MainServer::getNumP(const std::shared_ptr<Connection>& conn){
     if (numPar == Protocol::PAR_NUM) {
         num = readNumber(conn);
     } else {
-        //felmeddelande
+        server.deregisterConnection(conn);
     }
     return num;
 }
@@ -211,7 +211,7 @@ void PMserver::writeNumP(const std::shared_ptr<Connection>& conn, int num){
     writeNumber(conn, num);
 }
 
-bool MainServer::getStringP(const std::shared_ptr<Connection>& conn, string*) {
+string MainServer::getStringP(const std::shared_ptr<Connection>& conn) {
   unsigned char stringPar = conn->read();
   string s;
   if (stringPar == Protocol::PAR_STRING) {
@@ -220,7 +220,7 @@ bool MainServer::getStringP(const std::shared_ptr<Connection>& conn, string*) {
       s += conn->read();
     }
   } else {
-    //felmeddelande
+      server.deregisterConnection(conn);
   }
   return s;
 }

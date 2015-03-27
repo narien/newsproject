@@ -6,15 +6,17 @@
 //
 //
 
-#ifndef ____pmserver__
-#define ____pmserver__
+#ifndef ____mainserver__
+#define ____mainserver__
 
 #include <stdio.h>
-tpedef std::shared_ptr<Connection>& Conn;
+#include "server.h"
 
-class PMServer {
+typedef std::shared_ptr<Connection>& Conn;
+
+class MainServer {
 public:
-    PMServer(int port);
+    MainServer(Server& server);
     void listNG(const Conn conn);
     void createNG(const Conn conn);
     void deleteNG(const Conn conn);
@@ -35,4 +37,4 @@ private:
     DatabaseInterface db;
 };
 
-#endif /* defined(____pmserver__) */
+#endif /* defined(____mainserver__) */

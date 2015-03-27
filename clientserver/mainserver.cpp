@@ -1,24 +1,28 @@
-//
-//  pmserver.cpp
-//  
-//
-//  Created by Jakob Svemar on 2015-03-24.
-//
-//
-
 #include "mainserver.h"
 #include "protocol.h"
+#include "databasememory.h"
+#include "databasedisk.h"
 
 #include <iostream>
 #include <utility>
-using std::pair;
 #include <string>
-using std::string;
 #include <vector>
-using std::vector;
 
-MainServer::MainServer(Server& server){
-    db = DatabaseMemory();
+using namespace std;
+
+MainServer::MainServer(Server& server) {
+    //if(smth)
+    db = new DatabaseMemory();
+    //else
+    //wait with this till later...
+    //db = new DatabaseDisk();
+
+    this->server = &server;
+}
+
+MainServer::~MainServer() {
+      delete server;
+    //delete db; //ger warning, måste fixxas
 }
 
 /**
@@ -28,16 +32,16 @@ MainServer::MainServer(Server& server){
 void MainServer::listNG(const std::shared_ptr<Connection>& conn) {
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
-      vector<pair<int, string>> groups = db.listNewsgrops();
+      vector<pair<int, string>> groups = db->listNewsgroups();
       conn->write(Protocol::ANS_LIST_NG);
       writeNumP(conn, groups.size());
-      for(Pair p : groups) {
+      for(auto p : groups) {
           writeNumP(conn, p.first);
           writeStringP(conn, p.second);
       }
       conn->write(Protocol::ANS_END);
   } else {
-    server.deregisterConnection(conn);
+    server->deregisterConnection(conn);
   }
 }
 
@@ -50,7 +54,7 @@ void MainServer::createNG(const std::shared_ptr<Connection>& conn) {
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
       conn->write(Protocol::ANS_CREATE_NG);
-      if(db.insert_newsgroup(title)){
+      if(db->insertNewsgroup(title)){
           conn->write(Protocol::ANS_ACK);
       } else {
           conn->write(Protocol::ANS_NAK);
@@ -58,7 +62,7 @@ void MainServer::createNG(const std::shared_ptr<Connection>& conn) {
       }
       conn->write(Protocol::ANS_END);
   } else {
-    server.deregisterConnection(conn);
+    server->deregisterConnection(conn);
   }
 }
 
@@ -71,7 +75,7 @@ void MainServer::deleteNG(const std::shared_ptr<Connection>& conn) {
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
       conn->write(Protocol::ANS_DELETE_NG);
-      if(db.remove_newsgroup(groupID)){
+      if(db->removeNewsgroup(groupID)){
           conn->write(Protocol::ANS_ACK);
       } else {
           conn->write(Protocol::ANS_NAK);
@@ -79,7 +83,7 @@ void MainServer::deleteNG(const std::shared_ptr<Connection>& conn) {
       }
       conn->write(Protocol::ANS_END);
   } else {
-    server.deregisterConnection(conn);
+    server->deregisterConnection(conn);
   }
 }
 
@@ -94,10 +98,10 @@ void MainServer::listArt(const std::shared_ptr<Connection>& conn) {
   if (endByte == Protocol::COM_END) {
       vector<pair<int, string>> articles;
       conn->write(Protocol::ANS_LIST_ART);
-      if(db.listArticles(groupID, articles)){
+      if(db->listArticles(groupID, articles)){
           conn->write(Protocol::ANS_ACK);
           writeNumP(conn, articles.size());
-          for( Pair p : articles){
+          for(auto p : articles){
               writeNumP(conn, p.first);
               writeStringP(conn, p.second);
           }
@@ -107,7 +111,7 @@ void MainServer::listArt(const std::shared_ptr<Connection>& conn) {
       }
       conn->write(Protocol::ANS_END);
   } else {
-    server.deregisterConnection(conn);
+    server->deregisterConnection(conn);
   }
 }
 
@@ -122,7 +126,7 @@ void MainServer::createArt(const std::shared_ptr<Connection>& conn) {
   string text = getStringP(conn);
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
-      if(db.insert_article(groupID, title, author, text)){
+      if(db->insertArticle(groupID, title, author, text)){
           conn->write(Protocol::ANS_CREATE_ART);
           conn->write(Protocol::ANS_ACK);
       } else {
@@ -131,7 +135,7 @@ void MainServer::createArt(const std::shared_ptr<Connection>& conn) {
       }
       conn->write(Protocol::ANS_END);
   } else {
-    server.deregisterConnection(conn);
+    server->deregisterConnection(conn);
   }
 }
 
@@ -145,7 +149,7 @@ void MainServer::deleteArt(const std::shared_ptr<Connection>& conn){
     int art = getNumP(conn);
     unsigned char endByte = conn->read();
     if(endByte == Protocol::COM_END){
-        int result = db.delete_article(group, art);
+        int result = db->removeArticle(group, art);
         conn->write(Protocol::ANS_DELETE_ART);
         if (result == 1) {
             conn->write(Protocol::ANS_ACK);
@@ -159,7 +163,7 @@ void MainServer::deleteArt(const std::shared_ptr<Connection>& conn){
         }
         conn->write(Protocol::ANS_END);
     } else {
-        server.deregisterConnection(conn);
+        server->deregisterConnection(conn);
     }
 }
 
@@ -177,7 +181,7 @@ void MainServer::getArt(const std::shared_ptr<Connection>& conn){
         string title;
         string author;
         string text;
-        int result = db.get_article(group, art, title, author, text);
+        int result = db->getArticle(group, art, title, author, text);
         if (result == 1){
             conn->write(Protocol::ANS_ACK);
             writeStringP(conn, title);
@@ -193,17 +197,17 @@ void MainServer::getArt(const std::shared_ptr<Connection>& conn){
         }
         conn->write(Protocol::ANS_END);
     } else {
-      server.deregisterConnection(conn);
+      server->deregisterConnection(conn);
     }
 }
 
 int MainServer::getNumP(const std::shared_ptr<Connection>& conn){
     unsigned char numPar = conn->read();
-    int num;
+    int num = -1;
     if (numPar == Protocol::PAR_NUM) {
         num = readNumber(conn);
     } else {
-        server.deregisterConnection(conn);
+        server->deregisterConnection(conn);
     }
     return num;
 }
@@ -222,7 +226,7 @@ string MainServer::getStringP(const std::shared_ptr<Connection>& conn) {
       s += conn->read();
     }
   } else {
-      server.deregisterConnection(conn);
+      server->deregisterConnection(conn);
   }
   return s;
 }
@@ -274,39 +278,43 @@ int main(int argc, char* argv[]){
         auto conn = server.waitForActivity();
         if(conn != nullptr){
             try {
-	      unsigned char command = conn->read();
-	      switch (command) {
-	      case Protocol::COM_LIST_NG : 
-		pms.listNG(conn);
-		break;
-	      case Protocol::COM_CREATE_NG :
-		pms.createNG(conn);
-		break;
-	      case Protocol::COM_DELETE_NG : 
-		pms.deleteNG(conn);
-		break;
-	      case Protocol::COM_LIST_ART :
-		pms.listArt(conn);
-		break;
-	      case Protocol::COM_CREATE_ART : 
-		pms.createArt(conn);
-		break;
-	      case Protocol::COM_DELETE_ART :
-		pms.deleteArt(conn);
-		break;
-	      case Protocol::COM_GET_ART : 
-		pms.getArt(conn);
-		break;
-	      default :
-		//todo felmeddelande till klienten
-		break;
-            } catch (ConnectionClosedException&) {
+	               unsigned char command = conn->read();
+
+              	 switch (command) {
+              	      case Protocol::COM_LIST_NG : 
+              		        pms.listNG(conn);
+              		        break;
+              	      case Protocol::COM_CREATE_NG :
+              		        pms.createNG(conn);
+              		        break;
+              	      case Protocol::COM_DELETE_NG : 
+              		        pms.deleteNG(conn);
+              		        break;
+              	      case Protocol::COM_LIST_ART :
+              		        pms.listArt(conn);
+              		        break;
+              	      case Protocol::COM_CREATE_ART : 
+              		        pms.createArt(conn);
+              		        break;
+              	      case Protocol::COM_DELETE_ART :
+              		        pms.deleteArt(conn);
+              		        break;
+              	      case Protocol::COM_GET_ART : 
+              		        pms.getArt(conn);
+              		        break;
+              	      default :
+              		//todo felmeddelande till klienten
+              		break;
+                  }
+            } //catch (ConnectionClosedException& e) { //temp removed
+              catch (exception e) {
                 server.deregisterConnection(conn);
                 cout << "Client closed connection" << std::endl;
             }
         } else {
-            conn = make_shared<connection>();
-            server.registerConnection(conn);
+            //conn = make_shared<connection>(); //temp removed
+            //server.registerConnection(conn);
             cout << "New client connects" << std::endl;
         }
     }
+}

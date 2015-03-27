@@ -1,11 +1,3 @@
-//
-//  pmserver.h
-//  
-//
-//  Created by Jakob Svemar on 2015-03-24.
-//
-//
-
 #ifndef ____mainserver__
 #define ____mainserver__
 
@@ -16,6 +8,7 @@
 class MainServer {
 public:
     MainServer(Server& server);
+    ~MainServer();
     void listNG(const std::shared_ptr<Connection>& conn);
     void createNG(const std::shared_ptr<Connection>& conn);
     void deleteNG(const std::shared_ptr<Connection>& conn);
@@ -31,10 +24,8 @@ public:
     void writeNumber(const std::shared_ptr<Connection>& conn, int i);
     void writeStringP(const std::shared_ptr<Connection>& conn, string s);
 
-    
 private:
-    DatabaseInterface db;
-    Server& server;
+    Server* server;
+    DatabaseInterface* db;
 };
-
 #endif /* defined(____mainserver__) */

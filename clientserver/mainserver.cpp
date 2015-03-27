@@ -9,6 +9,13 @@
 #include "mainserver.h"
 #include "protocol.h"
 
+#include <utility>
+using std::pair;
+#include <string>
+using std::string;
+#include <vector>
+using std::vector;
+
 MainServer::MainServer(Server& server){
     db = DatabaseMemory();
 }

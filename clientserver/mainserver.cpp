@@ -140,7 +140,7 @@ void MainServer::createArt(const std::shared_ptr<Connection>& conn) {
  ANS_DELETE_ART [ANS_ACK |
  ANS_NAK [ERR_NG_DOES_NOT_EXIST | ERR_ART_DOES_NOT_EXIST]] ANS_END
  **/
-void MainServer::deleteArt(std::shared_ptr<Connection>& conn){
+void MainServer::deleteArt(const std::shared_ptr<Connection>& conn){
     int group = getNumP(conn);
     int art = getNumP(conn);
     unsigned char endByte = conn->read();
@@ -168,7 +168,7 @@ void MainServer::deleteArt(std::shared_ptr<Connection>& conn){
  ANS_GET_ART [ANS_ACK string_p string_p string_p |
  ANS_NAK [ERR_NG_DOES_NOT_EXIST | ERR_ART_DOES_NOT_EXIST]] ANS_END
  **/
-void MainServer::getArt(std::shared_ptr<Connection>& conn){
+void MainServer::getArt(const std::shared_ptr<Connection>& conn){
     int group = getNumP(conn);
     int art = getNumP(conn);
     unsigned char endByte = conn->read();

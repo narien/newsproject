@@ -206,7 +206,7 @@ int MainServer::getNumP(const std::shared_ptr<Connection>& conn){
     return num;
 }
 
-void PMserver::writeNumP(const std::shared_ptr<Connection>& conn, int num){
+void MainServer::writeNumP(const std::shared_ptr<Connection>& conn, int num){
     conn->write(Protocol::PAR_NUM);
     writeNumber(conn, num);
 }

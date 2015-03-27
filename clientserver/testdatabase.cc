@@ -50,7 +50,7 @@ int main() {
 		cout << "id: " << i.first << " title: " << i.second << endl;
 	}
 
-	cout << endl << "Get Article: " <<endl;
+	cout << endl << "Get Article: " << endl;
 
 	string getTitle;
 	string getAuthor;

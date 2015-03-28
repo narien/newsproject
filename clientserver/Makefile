@@ -1,4 +1,3 @@
-#
 # Makefile to make the file libclientserver.a, containing
 # connection.o and server.o
 #
@@ -10,8 +9,8 @@ CC  = g++
 # Define preprocessor, compiler, and linker flags. Uncomment the # lines
 # if you use clang++ and wish to use libc++ instead of libstdc++.
 CPPFLAGS =  -std=c++11
-CXXFLAGS =  -O2 -Wall -Wextra -pedantic-errors -Wold-style-cast 
-CXXFLAGS += -std=c++11 
+CXXFLAGS =  -O2 -Wall -Wextra -pedantic-errors -Wold-style-cast
+CXXFLAGS += -std=c++11
 CXXFLAGS += -g
 #CXXFLAGS =  -stdlib=libc++
 #CPPFLAGS =  -stdlib=libc++
@@ -34,7 +33,7 @@ mainserver: mainserver.o server.o connection.o databasememory.o
 
 # Standard clean
 clean:
-	rm -f *.o libclientserver.a
+	rm -f *.o libclientserver.a mainserver testdatabase
 
 # Generate dependencies in *.d files
 %.d: %.cc

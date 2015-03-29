@@ -15,7 +15,7 @@ class DatabaseDisk : public DatabaseInterface {
 		DatabaseDisk();
 		~DatabaseDisk();
 		bool insertNewsgroup(string title) override;
-		bool insertArticle(int& newsgroup_id, string article_title, string article_author, string& article_text) override;
+		bool insertArticle(int& newsgroup_id, string& article_title, string& article_author, string& article_text) override;
 		bool removeNewsgroup(int& newsgroup_id) override;
 		int removeArticle(int& newsgroup_id, int& article_id) override;
 		vector<pair<int, string>> listNewsgroups() override;

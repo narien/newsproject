@@ -14,7 +14,7 @@ using namespace std;
 class DatabaseInterface {
 	public:
 		virtual bool insertNewsgroup(string title) = 0; //=0 subclasses have to implement (pure virtual)
-		virtual bool insertArticle(int& newsgroup_id, string article_title, string article_author, string& article_text) = 0;
+		virtual bool insertArticle(int& newsgroup_id, string& article_title, string& article_author, string& article_text) = 0;
 		virtual bool removeNewsgroup(int& newsgroup_id) = 0;
 		virtual int removeArticle(int& newsgroup_id, int& article_id) = 0; //returns 1 if it worked, 0 if no such newsgroup and -1 if no such article
     	virtual vector<pair<int, string>> listNewsgroups() = 0; //<newsgroup_id, newsgroup_title>

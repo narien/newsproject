@@ -127,8 +127,8 @@ void MainServer::createArt(const std::shared_ptr<Connection>& conn) {
   string text = getStringP(conn);
   unsigned char endByte = conn->read();
   if (endByte == Protocol::COM_END) {
+      conn->write(Protocol::ANS_CREATE_ART);
       if(db->insertArticle(groupID, title, author, text)){
-          conn->write(Protocol::ANS_CREATE_ART);
           conn->write(Protocol::ANS_ACK);
       } else {
           conn->write(Protocol::ANS_NAK);

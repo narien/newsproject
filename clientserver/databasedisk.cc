@@ -37,7 +37,7 @@ bool DatabaseDisk::insertNewsgroup(string title) {
 	}
 }
 
-bool DatabaseDisk::insertArticle(int& newsgroup_id, string article_title, string article_author, string& article_text) {
+bool DatabaseDisk::insertArticle(int& newsgroup_id, string& article_title, string& article_author, string& article_text) {
 
 	//check if article exists as regular file
 /*	struct stat sb;

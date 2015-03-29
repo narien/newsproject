@@ -275,57 +275,32 @@ int main(int argc, char* argv[]){
         cerr << "Server initialization error." << std::endl;
         exit(1);
     }
-    cout <<"1" << endl;
     MainServer MS(server);
-    cout <<"2" << endl;
-
     while(true){
-        cout <<"3" << endl;
-
         auto conn = server.waitForActivity();
-        cout <<"4" << endl;
-
         if(conn != nullptr){
-            cout <<"5" << endl;
-
             try {
 	               unsigned int command = conn->read();
-                cout <<"6" << endl;
-
-
               	 switch (command) {
               	      case Protocol::COM_LIST_NG :
-                         cout << "LIST NG" << endl;
               		        MS.listNG(conn);
               		        break;
               	      case Protocol::COM_CREATE_NG :
-                         cout << "CREATE NG" << endl;
-
               		        MS.createNG(conn);
               		        break;
               	      case Protocol::COM_DELETE_NG :
-                         cout << "DELETE NG" << endl;
-
               		        MS.deleteNG(conn);
               		        break;
               	      case Protocol::COM_LIST_ART :
-                         cout << "LIST ART" << endl;
-
               		        MS.listArt(conn);
               		        break;
               	      case Protocol::COM_CREATE_ART :
-                         cout << "CREATE ART" << endl;
-
               		        MS.createArt(conn);
               		        break;
               	      case Protocol::COM_DELETE_ART :
-                         cout << "DELETE ART" << endl;
-
               		        MS.deleteArt(conn);
               		        break;
               	      case Protocol::COM_GET_ART :
-                         cout << "GET ART" << endl;
-
               		        MS.getArt(conn);
               		        break;
               	      default :

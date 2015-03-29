@@ -183,6 +183,7 @@ void MainServer::getArt(const std::shared_ptr<Connection>& conn){
         string author;
         string text;
         int result = db->getArticle(group, art, title, author, text);
+        conn->write(Protocol::ANS_GET_ART);
         if (result == 1){
             conn->write(Protocol::ANS_ACK);
             writeStringP(conn, title);
@@ -274,33 +275,57 @@ int main(int argc, char* argv[]){
         cerr << "Server initialization error." << std::endl;
         exit(1);
     }
+    cout <<"1" << endl;
     MainServer MS(server);
+    cout <<"2" << endl;
+
     while(true){
+        cout <<"3" << endl;
+
         auto conn = server.waitForActivity();
+        cout <<"4" << endl;
+
         if(conn != nullptr){
+            cout <<"5" << endl;
+
             try {
-	               unsigned char command = conn->read();
+	               unsigned int command = conn->read();
+                cout <<"6" << endl;
+
 
               	 switch (command) {
-              	      case Protocol::COM_LIST_NG : 
+              	      case Protocol::COM_LIST_NG :
+                         cout << "LIST NG" << endl;
               		        MS.listNG(conn);
               		        break;
               	      case Protocol::COM_CREATE_NG :
+                         cout << "CREATE NG" << endl;
+
               		        MS.createNG(conn);
               		        break;
-              	      case Protocol::COM_DELETE_NG : 
+              	      case Protocol::COM_DELETE_NG :
+                         cout << "DELETE NG" << endl;
+
               		        MS.deleteNG(conn);
               		        break;
               	      case Protocol::COM_LIST_ART :
+                         cout << "LIST ART" << endl;
+
               		        MS.listArt(conn);
               		        break;
-              	      case Protocol::COM_CREATE_ART : 
+              	      case Protocol::COM_CREATE_ART :
+                         cout << "CREATE ART" << endl;
+
               		        MS.createArt(conn);
               		        break;
               	      case Protocol::COM_DELETE_ART :
+                         cout << "DELETE ART" << endl;
+
               		        MS.deleteArt(conn);
               		        break;
-              	      case Protocol::COM_GET_ART : 
+              	      case Protocol::COM_GET_ART :
+                         cout << "GET ART" << endl;
+
               		        MS.getArt(conn);
               		        break;
               	      default :
@@ -313,8 +338,8 @@ int main(int argc, char* argv[]){
                 cout << "Client closed connection" << std::endl;
             }
         } else {
-            //conn = make_shared<connection>(); //temp removed
-            //server.registerConnection(conn);
+            conn = make_shared<Connection>(); //temp removed
+            server.registerConnection(conn);
             cout << "New client connects" << std::endl;
         }
     }

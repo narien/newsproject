@@ -13,9 +13,9 @@ db (root)
 	.db.txt (newsgroup counter)
 ---*/
 
-DatabaseDisk::DatabaseDisk() {
+//important req: "Changes to the database are immediately reflected on disk."
 
-	newsgroup_cntr = 1;
+DatabaseDisk::DatabaseDisk() {
 
 	//check if dir exists
 	struct stat sb;
@@ -32,11 +32,7 @@ DatabaseDisk::~DatabaseDisk() {
 bool DatabaseDisk::insertNewsgroup(string& title) {
 
 	string ngfolder = path;
-	ngfolder += to_string(newsgroup_cntr);
-	ngfolder += title;
-
-	//have to save this somehow for later...
-	newsgroup_cntr++;
+	ngfolder.append(to_string(readNewsgroupCntr()));
 
 	//check if dir exists
 	struct stat sb;
@@ -89,20 +85,43 @@ int DatabaseDisk::getArticle(const int& newsgroup_id, const int& article_id, str
 	return 0;
 }
 
-/*void DatabaseDisk::writeNewsgroupCntr() {
+//return the newsgroup counter and increment with one
+int DatabaseDisk::readNewsgroupCntr() {
 
+	int cntr;
 	string db = path;
 	db.append(".db.txt");
 
-	ofstream fout (db);
-	if (fout.is_open())
-	{
-	    fout << "This is a line.\n";
-	    fout.close();
+	if(ifstream(db)) {
+		fstream fs(db);
+		if(fs.is_open())
+		{
+			fs >> cntr;
+			cntr++;
+			fs.seekp(0, std::ios::beg);
+			fs.clear();
+			fs << to_string(cntr);
+		    fs.close();
+		}
+		else {
+			printf("Unable to open .db.txt file.\n");
+		}
 	}
 	else {
-		printf("Unable to open database file.");
+		//create file
+		ofstream ofs(db);
+		if(!ofs) {
+			printf("File .db.txt could not be created.\n");
+		}
+		//start with 1
+		ofs << "1";
+		ofs.close();
 	}
-}*/
+	return cntr-1; //return original value
+}
 
-//readcounters at the same time?
+//return the article counter and increment with one
+int DatabaseDisk::readArticleCntr() {
+
+	return 0;
+}

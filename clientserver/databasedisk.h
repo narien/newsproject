@@ -23,7 +23,8 @@ class DatabaseDisk : public DatabaseInterface {
     	int getArticle(const int& newsgroup_id, const int& article_id, string& article_title, string& article_author, string& article_text) override;
 
 	private:
-		int newsgroup_cntr;
+		int readNewsgroupCntr();
+		int readArticleCntr();
 		const string path = "./db/";
 };
 #endif

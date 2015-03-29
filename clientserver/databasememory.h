@@ -15,7 +15,7 @@ class DatabaseMemory : public DatabaseInterface {
 	public:
 		DatabaseMemory();
 		~DatabaseMemory();
-		bool insertNewsgroup(string title) override;
+		bool insertNewsgroup(string& title) override;
 		bool insertArticle(int& newsgroup_id, string& article_title, string& article_author, string& article_text) override;
 		bool removeNewsgroup(int& newsgroup_id) override;
 		int removeArticle(int& newsgroup_id, int& article_id) override;
@@ -24,7 +24,7 @@ class DatabaseMemory : public DatabaseInterface {
     	int getArticle(const int& newsgroup_id, const int& article_id, string& article_title, string& article_author, string& article_text) override;
 
 	private:
-		int newsgrp_cntr;
+		int newsgroup_cntr;
 		vector<Newsgroup> newsgroups;
 };
 #endif

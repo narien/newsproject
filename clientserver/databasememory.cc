@@ -7,14 +7,14 @@
 
 DatabaseMemory::DatabaseMemory() {
 
-	newsgrp_cntr = 1;
+	newsgroup_cntr = 1;
 }
 
 DatabaseMemory::~DatabaseMemory() {
 
 }
 
-bool DatabaseMemory::insertNewsgroup(string title) {
+bool DatabaseMemory::insertNewsgroup(string& title) {
 
 	//check if already exist
 	auto it = find_if(newsgroups.begin(), newsgroups.end(), [title] (const Newsgroup& ng) { return ng.title == title; });
@@ -23,8 +23,8 @@ bool DatabaseMemory::insertNewsgroup(string title) {
 
 		Newsgroup tmp_grp = Newsgroup();
 		tmp_grp.title = title;
-		tmp_grp.id = newsgrp_cntr;
-		newsgrp_cntr++;
+		tmp_grp.id = newsgroup_cntr;
+		newsgroup_cntr++;
 		newsgroups.push_back(tmp_grp);
 		return true;
 	}

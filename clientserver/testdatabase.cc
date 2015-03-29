@@ -17,10 +17,14 @@ void test(DatabaseInterface& dbi) {
 	int c = 3;
 	int d = 4;
 
-	dbi.insertNewsgroup("title1");
-	dbi.insertNewsgroup("title2");
-	dbi.insertNewsgroup("title2");
-	dbi.insertNewsgroup("title3");
+	string title1 = "title1";
+	string title2 = "title2";
+	string title3 = "title3";
+
+	dbi.insertNewsgroup(title1);
+	dbi.insertNewsgroup(title2);
+	dbi.insertNewsgroup(title2);
+	dbi.insertNewsgroup(title3);
 	dbi.removeNewsgroup(c);
 
 	cout << "Newsgroups:" << endl;
@@ -30,14 +34,25 @@ void test(DatabaseInterface& dbi) {
 
 	cout << endl;
 
+	string atitle1 = "atitle1";
+	string atitle2 = "atitle2";
+	string atitle3 = "atitle3";
+	string atitle4 = "atitle4";
+
+	string author1 = "author1";
+	string author2 = "author2";
+	string author3 = "author3";
+	string author4 = "author4";
+
+
 	string text1 = "text1";
 	string text2 = "text2";
 
 
-	dbi.insertArticle(a, "atitle1", "author1", text1);
-	dbi.insertArticle(a, "atitle2", "author2", text2);
-	dbi.insertArticle(a, "atitle3", "author3", text2);
-	dbi.insertArticle(a, "atitle4", "author4", text2);
+	dbi.insertArticle(a, atitle1, author1, text1);
+	dbi.insertArticle(a, atitle2, author2, text2);
+	dbi.insertArticle(a, atitle3, author3, text2);
+	dbi.insertArticle(a, atitle4, author4, text2);
 
 	dbi.removeArticle(a, b);
 

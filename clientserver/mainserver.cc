@@ -274,7 +274,7 @@ int main(int argc, char* argv[]){
         cerr << "Server initialization error." << std::endl;
         exit(1);
     }
-    MainServer pms(server);
+    MainServer MS(server);
     while(true){
         auto conn = server.waitForActivity();
         if(conn != nullptr){
@@ -283,25 +283,25 @@ int main(int argc, char* argv[]){
 
               	 switch (command) {
               	      case Protocol::COM_LIST_NG : 
-              		        pms.listNG(conn);
+              		        MS.listNG(conn);
               		        break;
               	      case Protocol::COM_CREATE_NG :
-              		        pms.createNG(conn);
+              		        MS.createNG(conn);
               		        break;
               	      case Protocol::COM_DELETE_NG : 
-              		        pms.deleteNG(conn);
+              		        MS.deleteNG(conn);
               		        break;
               	      case Protocol::COM_LIST_ART :
-              		        pms.listArt(conn);
+              		        MS.listArt(conn);
               		        break;
               	      case Protocol::COM_CREATE_ART : 
-              		        pms.createArt(conn);
+              		        MS.createArt(conn);
               		        break;
               	      case Protocol::COM_DELETE_ART :
-              		        pms.deleteArt(conn);
+              		        MS.deleteArt(conn);
               		        break;
               	      case Protocol::COM_GET_ART : 
-              		        pms.getArt(conn);
+              		        MS.getArt(conn);
               		        break;
               	      default :
               		//todo felmeddelande till klienten

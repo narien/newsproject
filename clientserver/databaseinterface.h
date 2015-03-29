@@ -13,6 +13,7 @@ using namespace std;
 
 class DatabaseInterface {
 	public:
+		virtual ~DatabaseInterface() {}; //have to provide virtual destructor implementation
 		virtual bool insertNewsgroup(string& title) = 0; //=0 subclasses have to implement (pure virtual)
 		virtual bool insertArticle(int& newsgroup_id, string& article_title, string& article_author, string& article_text) = 0;
 		virtual bool removeNewsgroup(int& newsgroup_id) = 0;

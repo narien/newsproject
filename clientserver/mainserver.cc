@@ -21,8 +21,8 @@ MainServer::MainServer(Server& server) {
 }
 
 MainServer::~MainServer() {
-      delete server;
-    //delete db; //ger warning, måste fixxas
+    delete server;
+    delete db;
 }
 
 /**
@@ -313,7 +313,7 @@ int main(int argc, char* argv[]){
                 cout << "Client closed connection" << std::endl;
             }
         } else {
-            conn = make_shared<Connection>(); //temp removed
+            conn = make_shared<Connection>();
             server.registerConnection(conn);
             cout << "New client connects" << std::endl;
         }

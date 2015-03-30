@@ -71,17 +71,42 @@ void run(const Connection& conn) {
                 createNG(conn, title);
                 break;
             case "delng":
-                int id;
-                cin >> id;
-                deleteNG(conn, id);
+                int groupID;
+                cin >> groupID;
+                deleteNG(conn, groupID);
                 break;
             case "listart":
+                int groupID;
+                cin >> groupID;
+                listArt(conn, groupID);
                 break;
             case "crtart":
+                int groupID;
+                cin >> groupID;
+                cout << "Enter title of the article:" << endl;
+                string title;
+                cin >> title;
+                cout << "Enter author of the article:" << endl;
+                string author;
+                cin >> author;
+                cout << "Enter the text of the article:" << endl;
+                string text;
+                cin >> text;
+                createArt(conn, groupID, title, author, text);
                 break;
             case "delart":
+                int groupID;
+                int artID;
+                cin >> groupID;
+                cin >> artID;
+                deleteArt(conn, groupID, artID);
                 break;
             case "getart":
+                int groupID;
+                int artID;
+                cin >> groupID;
+                cin >> artID;
+                getArt(conn, groupID, artID);
                 break;
             case "exit":
                 exit = true;

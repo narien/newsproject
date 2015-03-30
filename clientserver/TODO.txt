@@ -1,9 +1,9 @@
 ---TODO---
 
 
--server   (Nästan klar, ett par saker till att fixxa. se comments)
--client
--disk database (Halvfärdig...)
+-server   		(Nästan klar, refaktorisera)
+-client 		(Halvfärdig...)
+-disk database 	(Halvfärdig...)
 -makefile
 -manual
 

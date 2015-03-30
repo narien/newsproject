@@ -163,6 +163,7 @@ void deleteArt(const Connection& conn, int groupID, int artID) {
     conn.write(Protocol::COM_END);
     unsigned char answer = conn.read();
     if (answer == Protocol::ANS_DELETE_ART) {
+        answer = conn.read();
         if (answer == Protocol::ANS_ACK) {
             cout << artID << " successfully deleted." << endl;
         } else if (answer == Protocol::ANS_NAK) {

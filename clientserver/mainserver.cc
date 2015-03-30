@@ -304,11 +304,10 @@ int main(int argc, char* argv[]){
               		        MS.getArt(conn);
               		        break;
               	      default :
-              		//todo felmeddelande till klienten
-              		break;
+                            server->deregisterConnection(conn);
+                            break;
                   }
-            } //catch (ConnectionClosedException& e) { //temp removed
-              catch (exception e) {
+            } catch (exception e) {
                 server.deregisterConnection(conn);
                 cout << "Client closed connection" << std::endl;
             }

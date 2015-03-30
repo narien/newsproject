@@ -27,7 +27,6 @@ DatabaseDisk::DatabaseDisk() {
 		mkdir(path.c_str(), 0777);
 	}
 	closedir(dir);
-	delete dir;
 }
 
 DatabaseDisk::~DatabaseDisk() {
@@ -64,38 +63,39 @@ bool DatabaseDisk::insertNewsgroup(string& title) {
 					}
 					else {
 						cout << "Unable to open " << local_path << " file." << endl;
+						return false;
 					}
 				}
 				else {
 					cout << "Newsgroup file does not exist." << endl;
+					return false;
 				}
 			}
 		}
-
 	}
 	else {
-	cout << "Error opening " << path << " directory " << path << endl;
+		cout << "Error opening " << path << " directory " << path << endl;
+		return false;
 	}
 
 	closedir(dir);
-	delete dir;
-	
+
+	//create new newsgroup directory
 	string ngfolder = path;
-	ngfolder.append(to_string(readNewsgroupCntr())); //dont run every time
+	ngfolder.append(to_string(readNewsgroupCntr()));
 	string ngfile = ngfolder;
 	ngfile.append("/newsgroup.txt");
 
-
-
-
-
-
-
-
-	//check if dir exists
-	struct stat sb;
-	if(!(stat(ngfolder.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode))) {
+	DIR* new_dir = opendir(ngfolder.c_str());
+	if(!new_dir) {
 		mkdir(ngfolder.c_str(), 0777);
+	}
+	else {
+		//om databasen är intakt borde man aldrig hamna här
+		cout << "Error!" << endl;
+	}
+
+	closedir(new_dir);
 
 		//create file
 		ofstream ofs(ngfile);
@@ -104,15 +104,12 @@ bool DatabaseDisk::insertNewsgroup(string& title) {
 		//article counter start with 1
 		ofs << "1";
 		ofs.close();
+		return true;
 		}
 		else {
 			cout << "File " << ngfile << " could not be created." << endl;
 		}
-		return true;
-	}
-	else {
-		return false;
-	}
+	return false;
 }
 
 bool DatabaseDisk::insertArticle(int& newsgroup_id, string& article_title, string& article_author, string& article_text) {

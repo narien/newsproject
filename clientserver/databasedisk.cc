@@ -37,47 +37,12 @@ DatabaseDisk::~DatabaseDisk() {
 bool DatabaseDisk::insertNewsgroup(string& title) {
 
 	//check if newsgroup title exists
-	DIR* dir = opendir(path.c_str());
-	if(dir) {
-
-		struct dirent* entry;
-		while((entry = readdir(dir)) != NULL) {
-
-			//all directories in db
-			if(entry->d_type == isDir && entry->d_name[0] != '.') {
-		    	string local_path = path;
-		    	local_path.append(entry->d_name);
-		    	local_path.append("/newsgroup.txt");
-
-			    if(ifstream(local_path)) {
-					fstream fs(local_path);
-
-					if(fs.is_open()) {
-						string tmp_ngname;
-						fs >> tmp_ngname;
-					    fs.close();
-
-					    //newsgroup title already exists, return false
-					    if(tmp_ngname == title) {
-							closedir(dir);
-					    	return false;
-					    }
-					}
-					else {
-						cout << "Unable to open " << local_path << " file." << endl;
-					}
-				}
-				else {
-					cout << "Newsgroup file does not exist." << endl;
-				}
-			}
+	for (auto i : listNewsgroups()) {
+		//newsgroup title already exists, return false
+		if(i.second == title) {
+		return false;
 		}
 	}
-	else {
-		cout << "Unable to open " << path << " directory." << endl;
-	}
-
-	closedir(dir);
 
 	//create new newsgroup directory
 	string ngfolder = path;
@@ -131,8 +96,6 @@ bool DatabaseDisk::insertArticle(int& newsgroup_id, string& article_title, strin
 					art_path.append(to_string(readArticleCntr(newsgroup_id)));
 					art_path.append(".txt");
 
-					cout << art_path << endl;
-
 					//check if article exists
 					if(!ifstream(art_path)) {
 						ofstream os(art_path);
@@ -180,6 +143,43 @@ int DatabaseDisk::removeArticle(int& newsgroup_id, int& article_id) {
 vector<pair<int, string>> DatabaseDisk::listNewsgroups() {
 
 	vector<pair<int, string>> v;
+
+	DIR* dir = opendir(path.c_str());
+	if(dir) {
+
+		struct dirent* entry;
+		while((entry = readdir(dir)) != NULL) {
+
+			//all directories in db
+			if(entry->d_type == isDir && entry->d_name[0] != '.') {
+		    	string local_path = path;
+		    	local_path.append(entry->d_name);
+		    	local_path.append("/newsgroup.txt");
+
+			    if(ifstream(local_path)) {
+					fstream fs(local_path);
+
+					if(fs.is_open()) {
+						string tmp_ngname;
+						fs >> tmp_ngname;
+					    fs.close();
+
+						v.push_back(make_pair(atoi(entry->d_name), tmp_ngname));
+					}
+					else {
+						cout << "Unable to open " << local_path << " file." << endl;
+					}
+				}
+				else {
+					cout << "Newsgroup file does not exist." << endl;
+				}
+			}
+		}
+	}
+	else {
+		cout << "Unable to open " << path << " directory." << endl;
+	}
+	closedir(dir);
 	return v;
 }
 
@@ -209,7 +209,7 @@ int DatabaseDisk::readNewsgroupCntr() {
 			fs.seekp(0, std::ios::beg);
 			fs.clear();
 			cntr++;
-			fs << to_string(cntr);
+			fs << to_string(cntr) << '\n';
 		    fs.close();
 		}
 		else {
@@ -250,7 +250,7 @@ int DatabaseDisk::readArticleCntr(int& newsgroup_id) {
 			fs.seekp(pos, std::ios::beg);
 			fs.clear();
 			cntr++;
-			fs << to_string(cntr);
+			fs << to_string(cntr) << '\n';
 		    fs.close();
 		}
 		else {

@@ -51,34 +51,46 @@ void help(){
     cout << "crtart <groupID>: Creates an article in newsgroup <groupID> and follow the instructions." <<endl;
     cout << "delart <groupID> <artID>: Deletes article <artID> in newsgroup <groupID>." << endl;
     cout << "getart <groupID> <artID>: Displays article <artID> in newsgroup <groupID>" << endl;
+    cout << "exit: Quit the client" << endl;
 }
 
 void run(const Connection& conn) {
     help();
     
     string choice;
-    cin >> choice;
-    switch (choice) {
-        case "listng":
-            listNG(conn);
-            break;
-        case "crtng":
-            break;
-        case "delng":
-            break;
-        case "listart":
-            break;
-        case "crtart":
-            break;
-        case "delart":
-            break;
-        case "getart":
-            break;
+    bool exit = false;
+    while(!exit){
+        cin >> choice;
+        switch (choice) {
+            case "listng":
+                listNG(conn);
+                break;
+            case "crtng":
+                string title;
+                cin >> title;
+                createNG(conn, title);
+                break;
+            case "delng":
+                int id;
+                cin >> id;
+                deleteNG(conn, id);
+                break;
+            case "listart":
+                break;
+            case "crtart":
+                break;
+            case "delart":
+                break;
+            case "getart":
+                break;
+            case "exit":
+                exit = true;
             
-        default:
-            cout << "Incorrect input, please enter a command with the following syntax:" << endl;
-            help();
-            break;
+            default:
+                cout << "Incorrect input, please enter a command with the following syntax:" << endl;
+                help();
+                break;
+        }
     }
 }
 
@@ -147,13 +159,11 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 	
-	while (true) {
 		try {
 		  run(conn);
 		} catch (ConnectionClosedException&) {
 			cout << " no reply from server. Exiting." << endl;
 			exit(1);
 		}
-	}
 }
 

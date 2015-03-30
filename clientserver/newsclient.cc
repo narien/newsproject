@@ -106,6 +106,7 @@ void listNG(const Connection& conn) {
     string title = getStringP(conn);
     cout << id << "\t" << title << endl;
   }
+  cout << endl;
   unsigned char endByte = conn.read(Protocol::ANS_END);
 }
 
@@ -148,6 +149,52 @@ void deleteNG(const Connection& conn, int groupID) {
     cout << "Error: " << groupID << " does not exist." << endl;
   }
   unsigned char endByte = conn.read();
+}
+
+void listArt(const Connection& conn, int groupID) {
+  conn.write(Protocol::COM_LIST_ART);
+  writeNumP(groupID);
+  conn.write(Protocol::COM_END);
+  unsigned char ansListArt = conn.read();
+  unsigned char answer = conn.read();
+  if (answer ==  Protocol::ANS_ACK) {
+    cout << "ID\tTitle" << endl;
+    int nbrOfArticles = getNumP();
+    for (int i = 0; i < nbrOfArticles; ++i) {
+      int id = getNumP(conn);
+      string title = getStringP(conn);
+      cout << id << "\t" << title << endl;
+    }
+    cout << endl;
+  } else if (conn.read() == Protocol::ERR_NG_DOES_NOT_EXIST && answer == Protocol::ANS_NAK) {
+    cout << "Error: " << groupID << " does not exist." << endl;
+  }
+  unsigned char endByte = conn.read();
+}
+
+void createArt(const Connection& conn, int groupID, string title, string author, string text) {
+  conn.write(Protocol::COM_CREATE_ART);
+  writeNumP(groupID);
+  writeStringP(title);
+  writeStringP(author);
+  writeStringP(text);
+  conn.write(Protocol::COM_END);
+  unsigned char ansCreateArt = conn.read();
+  unsigned char answer = conn.read();
+  if (answer == Protocol::ANS_ACK) {
+    cout << title << " successfully created on the server." << endl;
+  } else if (conn.read() == Protocol::ERR_NG_DOES_NOT_EXIST && answer == ANS_NAK) {
+    cout << "Error: the group with ID " << groupID << " does not exist." << endl;
+  }
+  unsigned char endByte = conn.read();
+}
+
+void deleteArt(const Connection& conn, int groupID, int artID) {
+  
+}
+
+void getArt(const Connection& conn, int groupID, int artID) {
+  
 }
 
 int main(int argc, char* argv[]) {

@@ -43,6 +43,52 @@ string getStringP(const Connection& conn) {
   return s;
 }
 
+void listNG(const Connection& conn) {
+  conn.write(Protocol::COM_LIST_NG);
+  conn.write(Protocol::COM_END);
+  unsigned char ansList = conn.read();
+  int nbrOfGroups = getNumP(conn);
+  cout "Newsgroups:" << endl;
+  cout << "ID\tTitle" << endl;
+  for (int i = 0; i < nbrOfGroups; ++i) {
+    int id = getNumP(conn);
+    string title = getStringP(conn);
+    cout << id << "\t" << title << endl;
+  }
+  unsigned char endByte = conn.read(Protocol::ANS_END);
+}
+
+void writeNumP(const Connection& conn, int num){
+    conn->write(Protocol::PAR_NUM);
+    writeNumber(conn, num);
+}
+
+void writeStringP(const Connection& conn, string s){
+    conn->write(Protocol::PAR_STRING);
+    writeNumber(conn, s.size());
+    for (char c : s){
+        conn->write(c);
+    }
+}
+
+void createGroup(const Connection& conn, string title) {
+  conn.write(Protocol::COM_CREATE_NG);
+  writeStringP(conn, title);
+  conn.write(Protocol::COM_END);
+  unsigned char ansCreateNG = conn.read();
+  unsigned char answer = conn.read();
+  if (answer == Protocol::ANS_ACK) {
+    cout << "
+}
+
+void deleteNG(const Connection& conn, int groupID) {
+  conn.write(Protocol::COM_DELETE_NG);
+  writeNumP(groupID);
+  conn.write(Protocol::COM_END);
+  
+}
+
+
 void rootMenu(const Connection& conn) {
   conn.write(Protocol::COM_LIST_NG);
   conn.write(Protocol::COM_END);

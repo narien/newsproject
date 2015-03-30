@@ -186,6 +186,58 @@ vector<pair<int, string>> DatabaseDisk::listNewsgroups() {
 //returns 1 if it worked, 0 if no such newsgroup
 bool DatabaseDisk::listArticles(int& newsgroup_id, vector<pair<int, string>>& articles) {
 
+		//check if newsgroup exists
+	DIR* dir = opendir(path.c_str());
+	if(dir) {
+
+		struct dirent* entry;
+		while((entry = readdir(dir)) != NULL) {
+
+			//all directories in db
+			if(entry->d_type == isDir && entry->d_name[0] != '.') {
+				//folder exist with same id?
+				if(atoi(entry->d_name) == newsgroup_id) {
+
+					string art_path = path;
+					art_path.append(entry->d_name);
+					art_path.append("/");
+					art_path.append("1"); //iterate all files
+					art_path.append(".txt");
+
+					cout << art_path << endl;
+
+					//check if article exists
+					if(ifstream(art_path)) {
+						ifstream fs(art_path);
+						if(fs.is_open()) {
+							string tmp_aname;
+							fs >> tmp_aname;
+						    fs.close();
+
+						    cout << "lol " << tmp_aname << endl;
+
+						    //articles.push_back(make_pair(atoi(), tmp_aname));
+
+						    closedir(dir);
+						    return true;
+						}
+						else {
+							cout << "Unable to open " << art_path << " file." << endl;
+						}
+					}
+				}
+				else {
+					//no such newsgroup
+					closedir(dir);
+					return false;
+				}
+			}
+		}
+	}
+	else {
+		cout << "Unable to open " << path << " directory." << endl;
+	}
+	closedir(dir);
 	return false;
 }
 

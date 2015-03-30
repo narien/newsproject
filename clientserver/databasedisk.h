@@ -4,7 +4,6 @@
 #define DATABASE_DISK_H
 
 #include "databaseinterface.h"
-#include "newsgroup.h"
 
 #include <string>
 #include <vector>

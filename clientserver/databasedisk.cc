@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sys/stat.h>
 #include <dirent.h>
+#include <limits>
 
 /*---File Structure---
 db (root)
@@ -92,23 +93,23 @@ bool DatabaseDisk::insertNewsgroup(string& title) {
 	}
 	else {
 		//om databasen är intakt borde man aldrig hamna här
-		cout << "Error!" << endl;
+		cout << "Critical database error!" << endl;
 	}
 
 	closedir(new_dir);
 
-		//create file
-		ofstream ofs(ngfile);
-		if(ofs.is_open()) {
+	//create file
+	ofstream ofs(ngfile);
+	if(ofs.is_open()) {
 		ofs << title << '\n';
 		//article counter start with 1
 		ofs << "1";
 		ofs.close();
 		return true;
-		}
-		else {
-			cout << "File " << ngfile << " could not be created." << endl;
-		}
+	}
+	else {
+		cout << "File " << ngfile << " could not be created." << endl;
+	}
 	return false;
 }
 
@@ -120,7 +121,7 @@ bool DatabaseDisk::insertArticle(int& newsgroup_id, string& article_title, strin
 		mkdir(ngfolder.c_str(), 0777);
 	}*/
 
-	readArticleCntr();
+	readArticleCntr(newsgroup_id);
 
 	return false;
 }
@@ -166,9 +167,9 @@ int DatabaseDisk::readNewsgroupCntr() {
 		if(fs.is_open())
 		{
 			fs >> cntr;
-			cntr++;
 			fs.seekp(0, std::ios::beg);
 			fs.clear();
+			cntr++;
 			fs << to_string(cntr);
 		    fs.close();
 		}
@@ -180,19 +181,46 @@ int DatabaseDisk::readNewsgroupCntr() {
 		//create file
 		ofstream ofs(db);
 		if(ofs.is_open()) {
-		//start with 1
-		ofs << "1";
+		//start with 1 and add 1
+		ofs << "2";
 		ofs.close();
+		return 1;
 		}
 		else {
 			cout << "File " << db << " could not be created." << endl;
 		}
 	}
-	return cntr-1;
+	return cntr--;
 }
 
 //return the article counter and increment with one
-int DatabaseDisk::readArticleCntr() {
+int DatabaseDisk::readArticleCntr(int& newsgroup_id) {
 
-	return 0;
+	int cntr;
+	string ng = path;
+	ng.append(to_string(newsgroup_id));
+	ng.append("/newsgroup.txt");
+
+	if(ifstream(ng)) {
+		fstream fs(ng);
+		if(fs.is_open()) {
+			//ignore first line (newsgroup title)
+			fs.ignore(numeric_limits<streamsize>::max(), '\n');
+			long pos = fs.tellp();
+			fs >> cntr;
+			fs.seekp(pos, std::ios::beg);
+			fs.clear();
+			cntr++;
+			fs << to_string(cntr);
+		    fs.close();
+		}
+		else {
+			cout << "Unable to open " << ng << " file." << endl;
+		}
+	}
+	else {
+		//om databasen är intakt borde man aldrig hamna här
+		cout << "Critical database error!dfsdfsdfsdfsdfsdddddddddddddddddddddddddddddddddddddddddddddddddddddd" << endl;
+	}
+	return cntr--;
 }

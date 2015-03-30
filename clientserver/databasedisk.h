@@ -24,7 +24,7 @@ class DatabaseDisk : public DatabaseInterface {
 
 	private:
 		int readNewsgroupCntr();
-		int readArticleCntr();
+		int readArticleCntr(int& newsgroup_id);
 		const string path = "./db/";
 		const unsigned char isDir = 0x4;
 		const unsigned char isFile = 0x8;

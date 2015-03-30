@@ -190,11 +190,46 @@ void createArt(const Connection& conn, int groupID, string title, string author,
 }
 
 void deleteArt(const Connection& conn, int groupID, int artID) {
-  
+  conn.write(Protocol::COM_DELETE_ART);
+  writeNump(groupID);
+  writeNumP(artID);
+  conn.write(COM_END);
+  unsigned char answer = conn.read();
+  if (answer == Protocol::ANS_ACK) {
+    cout << artID << " successfully created." << endl;
+  } else if (answer == Protocol::ANS_NAK) {
+    unsigned char errorType = conn.read();
+    if (errorType == Protocol::ERR_NG_DOES_NOT_EXIST) {
+      cout << "Error: the group with ID " << groupID << " does not exist." << endl;
+    } else if (errorType == Protocol::ERR_ART_DOES_NOT_EXIST) {
+      cout << "Error: the article with ID " << artID << " does not exist." << endl;
+    }
+  }
+  unsigned char endByte = conn.read();
 }
 
 void getArt(const Connection& conn, int groupID, int artID) {
-  
+  conn.write(Protocol::COM_GET_ART);
+  writeNumP(groupID);
+  writeNumP(artID);
+  conn.write(Protocol::COM_END);
+  unsigned char answer = conn.read();
+  if (answer = Protocol::ANS_ACK) {
+    string title = getStringP();
+    string author = getStringP();
+    string text = getStringP();
+    cout << "Title: " <<  title << endl;
+    cout << "Author: " << author << endl;
+    cout << "Article text: " << text << endl;
+  } else if (answer == Protocol::ANS_NAK) {
+    unsigned char errorType = conn.read();
+    if (errorType == Protocol::ERR_NG_DOES_NOT_EXIST) {
+      cout << "Error: the newsgroup with ID " << groupID << " does not exist." << endl;
+    } else if (errorType == Protocol::ERR_ART_DOES_NOT_EXIST) {
+      cout << "Error: the article with ID " << artID << " does not exist." << endl;
+    }
+  }
+  unsigned char endByte = conn.read();
 }
 
 int main(int argc, char* argv[]) {

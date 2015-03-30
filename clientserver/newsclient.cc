@@ -11,36 +11,43 @@
 using namespace std;
 
 int readNumber(const Connection& conn) {
-    unsigned char byte1 = conn->read();
-    unsigned char byte2 = conn->read();
-    unsigned char byte3 = conn->read();
-    unsigned char byte4 = conn->read();
+    unsigned char byte1 = conn.read();
+    unsigned char byte2 = conn.read();
+    unsigned char byte3 = conn.read();
+    unsigned char byte4 = conn.read();
     return (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
 }
 
+void writeNumber(const Connection& conn, int value) {
+    conn.write((value >> 24) & 0xFF);
+    conn.write((value >> 16) & 0xFF);
+    conn.write((value >> 8)	 & 0xFF);
+    conn.write(value & 0xFF);
+}
+
 int getNumP(const Connection& conn){
-    unsigned char numPar = conn->read();
+    unsigned char numPar = conn.read();
     int num = -1;
     if (numPar == Protocol::PAR_NUM) {
         num = readNumber(conn);
     } else {
-      // server->deregisterConnection(conn);
+        // server->deregisterConnection(conn);
     }
     return num;
 }
 
 string getStringP(const Connection& conn) {
-  unsigned char stringPar = conn->read();
-  string s;
-  if (stringPar == Protocol::PAR_STRING) {
-    int nbrOfBytes = readNumber(conn);
-    for (int i = 0; i < nbrOfBytes; ++i) {
-      s += conn->read();
+    unsigned char stringPar = conn.read();
+    string s;
+    if (stringPar == Protocol::PAR_STRING) {
+        int nbrOfBytes = readNumber(conn);
+        for (int i = 0; i < nbrOfBytes; ++i) {
+            s += conn.read();
+        }
+    } else {
+        //server->deregisterConnection(conn);
     }
-  } else {
-    //server->deregisterConnection(conn);
-  }
-  return s;
+    return s;
 }
 void help(){
     cout << "Options:" << endl;
@@ -54,6 +61,151 @@ void help(){
     cout << "exit: Quit the client" << endl;
 }
 
+void listNG(const Connection& conn) {
+    conn.write(Protocol::COM_LIST_NG);
+    conn.write(Protocol::COM_END);
+    unsigned char ansList = conn.read();
+    int nbrOfGroups = getNumP(conn);
+    cout << "Newsgroups:" << endl;
+    cout << "ID\tTitle" << endl;
+    for (int i = 0; i < nbrOfGroups; ++i) {
+        int id = getNumP(conn);
+        string title = getStringP(conn);
+        cout << id << "\t" << title << endl;
+    }
+    cout << endl;
+    unsigned char endByte = conn.read();
+}
+
+void writeNumP(const Connection& conn, int num){
+    conn.write(Protocol::PAR_NUM);
+    writeNumber(conn, num);
+}
+
+void writeStringP(const Connection& conn, string s){
+    conn.write(Protocol::PAR_STRING);
+    writeNumber(conn, s.size());
+    for (char c : s){
+        conn.write(c);
+    }
+}
+
+void createNG(const Connection& conn, string title) {
+    conn.write(Protocol::COM_CREATE_NG);
+    writeStringP(conn, title);
+    conn.write(Protocol::COM_END);
+    unsigned char ansCreateNG = conn.read();
+    unsigned char answer = conn.read();
+    if (answer == Protocol::ANS_ACK) {
+        cout << title << " successfully created on the server." << endl;
+    } else if (conn.read() == Protocol::ERR_NG_ALREADY_EXISTS && answer == Protocol::ANS_NAK) {
+        cout << "Error: " << title << " already exists." << endl;
+    }
+    unsigned char endByte = conn.read();
+}
+
+void deleteNG(const Connection& conn, int groupID) {
+    conn.write(Protocol::COM_DELETE_NG);
+    writeNumP( conn, groupID);
+    conn.write(Protocol::COM_END);
+    unsigned char ansDeleteNG = conn.read();
+    unsigned char answer = conn.read();
+    if (answer == Protocol::ANS_ACK) {
+        cout << groupID << " successfully deleted on the server." << endl;
+    } else if (conn.read() == Protocol::ERR_NG_DOES_NOT_EXIST && answer == Protocol::ANS_NAK) {
+        cout << "Error: " << groupID << " does not exist." << endl;
+    }
+    unsigned char endByte = conn.read();
+}
+
+void listArt(const Connection& conn, int groupID) {
+    conn.write(Protocol::COM_LIST_ART);
+    writeNumP(conn, groupID);
+    conn.write(Protocol::COM_END);
+    unsigned char ansListArt = conn.read();
+    unsigned char answer = conn.read();
+    if (answer ==  Protocol::ANS_ACK) {
+        cout << "ID\tTitle" << endl;
+        int nbrOfArticles = getNumP(conn);
+        for (int i = 0; i < nbrOfArticles; ++i) {
+            int id = getNumP(conn);
+            string title = getStringP(conn);
+            cout << id << "\t" << title << endl;
+        }
+        cout << endl;
+    } else if (conn.read() == Protocol::ERR_NG_DOES_NOT_EXIST && answer == Protocol::ANS_NAK) {
+        cout << "Error: " << groupID << " does not exist." << endl;
+    }
+    unsigned char endByte = conn.read();
+}
+
+void createArt(const Connection& conn, int groupID, string title, string author, string text) {
+    conn.write(Protocol::COM_CREATE_ART);
+    writeNumP(conn, groupID);
+    writeStringP(conn, title);
+    writeStringP(conn, author);
+    writeStringP(conn, text);
+    conn.write(Protocol::COM_END);
+    unsigned char ansCreateArt = conn.read();
+    unsigned char answer = conn.read();
+    if (answer == Protocol::ANS_ACK) {
+        cout << title << " successfully created on the server." << endl;
+    } else if (conn.read() == Protocol::ERR_NG_DOES_NOT_EXIST && answer == Protocol::ANS_NAK) {
+        cout << "Error: the group with ID " << groupID << " does not exist." << endl;
+    }
+    unsigned char endByte = conn.read();
+}
+
+void deleteArt(const Connection& conn, int groupID, int artID) {
+    conn.write(Protocol::COM_DELETE_ART);
+    writeNumP(conn, groupID);
+    writeNumP(conn, artID);
+    conn.write(Protocol::COM_END);
+    unsigned char answer = conn.read();
+    if (answer == Protocol::ANS_DELETE_ART) {
+        if (answer == Protocol::ANS_ACK) {
+            cout << artID << " successfully created." << endl;
+        } else if (answer == Protocol::ANS_NAK) {
+            unsigned char errorType = conn.read();
+            if (errorType == Protocol::ERR_NG_DOES_NOT_EXIST) {
+                cout << "Error: the group with ID " << groupID << " does not exist." << endl;
+            } else if (errorType == Protocol::ERR_ART_DOES_NOT_EXIST) {
+                cout << "Error: the article with ID " << artID << " does not exist." << endl;
+            }
+        }
+        unsigned char endByte = conn.read();
+    }
+}
+
+void getArt(const Connection& conn, int groupID, int artID) {
+    conn.write(Protocol::COM_GET_ART);
+    writeNumP(conn, groupID);
+    writeNumP(conn, artID);
+    conn.write(Protocol::COM_END);
+    unsigned char answer = conn.read();
+    if(answer == Protocol::ANS_GET_ART) {
+        answer = conn.read();
+        if (answer == Protocol::ANS_ACK) {
+            string title = getStringP(conn);
+            string author = getStringP(conn);
+            string text = getStringP(conn);
+            cout << "Title: " <<  title << endl;
+            cout << "Author: " << author << endl;
+            cout << "Article text: " << text << endl;
+        } else if (answer == Protocol::ANS_NAK) {
+            cout << "server accepterar inte" << endl;
+            
+            unsigned char errorType = conn.read();
+            if (errorType == Protocol::ERR_NG_DOES_NOT_EXIST) {
+                cout << "Error: the newsgroup with ID " << groupID << " does not exist." << endl;
+            } else if (errorType == Protocol::ERR_ART_DOES_NOT_EXIST) {
+                cout << "Error: the article with ID " << artID << " does not exist." << endl;
+            }
+        }
+        unsigned char endByte = conn.read();
+    }
+}
+
 void run(const Connection& conn) {
     help();
     
@@ -61,227 +213,81 @@ void run(const Connection& conn) {
     bool exit = false;
     while(!exit){
         cin >> choice;
-        switch (choice) {
-            case "listng":
-                listNG(conn);
-                break;
-            case "crtng":
-                string title;
-                cin >> title;
-                createNG(conn, title);
-                break;
-            case "delng":
-                int groupID;
-                cin >> groupID;
-                deleteNG(conn, groupID);
-                break;
-            case "listart":
-                int groupID;
-                cin >> groupID;
-                listArt(conn, groupID);
-                break;
-            case "crtart":
-                int groupID;
-                cin >> groupID;
-                cout << "Enter title of the article:" << endl;
-                string title;
-                cin >> title;
-                cout << "Enter author of the article:" << endl;
-                string author;
-                cin >> author;
-                cout << "Enter the text of the article:" << endl;
-                string text;
-                cin >> text;
-                createArt(conn, groupID, title, author, text);
-                break;
-            case "delart":
-                int groupID;
-                int artID;
-                cin >> groupID;
-                cin >> artID;
-                deleteArt(conn, groupID, artID);
-                break;
-            case "getart":
-                int groupID;
-                int artID;
-                cin >> groupID;
-                cin >> artID;
-                getArt(conn, groupID, artID);
-                break;
-            case "exit":
-                exit = true;
+        if(choice == "listng"){
+            listNG(conn);
+        }else if (choice == "crtng"){
+            string title;
+            cin >> title;
+            createNG(conn, title);
+        } else if (choice == "delng"){
+            int groupID;
+            cin >> groupID;
+            deleteNG(conn, groupID);
+        } else if (choice == "listart"){
+            int groupID;
+            cin >> groupID;
+            listArt(conn, groupID);
+        } else if (choice == "crtart"){
+            int groupID;
+            cin >> groupID;
+            cin.ignore();
+            cout << "Enter title of the article:" << endl;
+            string title;
+            getline(cin, title);
+            cout << "Enter author of the article:" << endl;
+            string author;
+            getline(cin, author);
+            cout << "Enter the text of the article:" << endl;
+            string text;
+            getline(cin, text);
+            createArt(conn, groupID, title, author, text);
+        } else if (choice == "delart"){
+            int groupID;
+            int artID;
+            cin >> groupID;
+            cin >> artID;
+            deleteArt(conn, groupID, artID);
+        } else if (choice == "getart"){
+            int groupID;
+            int artID;
+            cin >> groupID;
+            cin >> artID;
+            getArt(conn, groupID, artID);
+        } else if (choice == "exit"){
+            exit = true;
             
-            default:
-                cout << "Incorrect input, please enter a command with the following syntax:" << endl;
-                help();
-                break;
+        } else {
+            cout << "Incorrect input, please enter a command with the following syntax:" << endl;
+            help();
         }
     }
 }
 
-void listNG(const Connection& conn) {
-  conn.write(Protocol::COM_LIST_NG);
-  conn.write(Protocol::COM_END);
-  unsigned char ansList = conn.read();
-  int nbrOfGroups = getNumP(conn);
-  cout "Newsgroups:" << endl;
-  cout << "ID\tTitle" << endl;
-  for (int i = 0; i < nbrOfGroups; ++i) {
-    int id = getNumP(conn);
-    string title = getStringP(conn);
-    cout << id << "\t" << title << endl;
-  }
-  cout << endl;
-  unsigned char endByte = conn.read(Protocol::ANS_END);
-}
-
-void writeNumP(const Connection& conn, int num){
-    conn->write(Protocol::PAR_NUM);
-    writeNumber(conn, num);
-}
-
-void writeStringP(const Connection& conn, string s){
-    conn->write(Protocol::PAR_STRING);
-    writeNumber(conn, s.size());
-    for (char c : s){
-        conn->write(c);
-    }
-}
-
-void createNG(const Connection& conn, string title) {
-  conn.write(Protocol::COM_CREATE_NG);
-  writeStringP(conn, title);
-  conn.write(Protocol::COM_END);
-  unsigned char ansCreateNG = conn.read();
-  unsigned char answer = conn.read();
-  if (answer == Protocol::ANS_ACK) {
-    cout << title << " successfully created on the server." << endl;
-  } else if (conn.read() == Protocol::ERR_NG_ALREADY_EXISTS && answer == ANS_NAK) {
-    cout << "Error: " << title << " already exists." << endl;
-  }
-  unsigned char endByte = conn.read();
-}
-
-void deleteNG(const Connection& conn, int groupID) {
-  conn.write(Protocol::COM_DELETE_NG);
-  writeNumP(groupID);
-  conn.write(Protocol::COM_END);
-  unsigned char ansDeleteNG = conn.read();
-  unsigned char answer = conn.read();
-  if (answer == Protocol::ANS_ACK) {
-    cout << title << " successfully deleted on the server." << endl;
-  } else if (conn.read() == Protocol::ERR_NG_DOES_NOT_EXIST && answer == ANS_NAK) {
-    cout << "Error: " << groupID << " does not exist." << endl;
-  }
-  unsigned char endByte = conn.read();
-}
-
-void listArt(const Connection& conn, int groupID) {
-  conn.write(Protocol::COM_LIST_ART);
-  writeNumP(groupID);
-  conn.write(Protocol::COM_END);
-  unsigned char ansListArt = conn.read();
-  unsigned char answer = conn.read();
-  if (answer ==  Protocol::ANS_ACK) {
-    cout << "ID\tTitle" << endl;
-    int nbrOfArticles = getNumP();
-    for (int i = 0; i < nbrOfArticles; ++i) {
-      int id = getNumP(conn);
-      string title = getStringP(conn);
-      cout << id << "\t" << title << endl;
-    }
-    cout << endl;
-  } else if (conn.read() == Protocol::ERR_NG_DOES_NOT_EXIST && answer == Protocol::ANS_NAK) {
-    cout << "Error: " << groupID << " does not exist." << endl;
-  }
-  unsigned char endByte = conn.read();
-}
-
-void createArt(const Connection& conn, int groupID, string title, string author, string text) {
-  conn.write(Protocol::COM_CREATE_ART);
-  writeNumP(groupID);
-  writeStringP(title);
-  writeStringP(author);
-  writeStringP(text);
-  conn.write(Protocol::COM_END);
-  unsigned char ansCreateArt = conn.read();
-  unsigned char answer = conn.read();
-  if (answer == Protocol::ANS_ACK) {
-    cout << title << " successfully created on the server." << endl;
-  } else if (conn.read() == Protocol::ERR_NG_DOES_NOT_EXIST && answer == ANS_NAK) {
-    cout << "Error: the group with ID " << groupID << " does not exist." << endl;
-  }
-  unsigned char endByte = conn.read();
-}
-
-void deleteArt(const Connection& conn, int groupID, int artID) {
-  conn.write(Protocol::COM_DELETE_ART);
-  writeNump(groupID);
-  writeNumP(artID);
-  conn.write(COM_END);
-  unsigned char answer = conn.read();
-  if (answer == Protocol::ANS_ACK) {
-    cout << artID << " successfully created." << endl;
-  } else if (answer == Protocol::ANS_NAK) {
-    unsigned char errorType = conn.read();
-    if (errorType == Protocol::ERR_NG_DOES_NOT_EXIST) {
-      cout << "Error: the group with ID " << groupID << " does not exist." << endl;
-    } else if (errorType == Protocol::ERR_ART_DOES_NOT_EXIST) {
-      cout << "Error: the article with ID " << artID << " does not exist." << endl;
-    }
-  }
-  unsigned char endByte = conn.read();
-}
-
-void getArt(const Connection& conn, int groupID, int artID) {
-  conn.write(Protocol::COM_GET_ART);
-  writeNumP(groupID);
-  writeNumP(artID);
-  conn.write(Protocol::COM_END);
-  unsigned char answer = conn.read();
-  if (answer = Protocol::ANS_ACK) {
-    string title = getStringP();
-    string author = getStringP();
-    string text = getStringP();
-    cout << "Title: " <<  title << endl;
-    cout << "Author: " << author << endl;
-    cout << "Article text: " << text << endl;
-  } else if (answer == Protocol::ANS_NAK) {
-    unsigned char errorType = conn.read();
-    if (errorType == Protocol::ERR_NG_DOES_NOT_EXIST) {
-      cout << "Error: the newsgroup with ID " << groupID << " does not exist." << endl;
-    } else if (errorType == Protocol::ERR_ART_DOES_NOT_EXIST) {
-      cout << "Error: the article with ID " << artID << " does not exist." << endl;
-    }
-  }
-  unsigned char endByte = conn.read();
-}
-
 int main(int argc, char* argv[]) {
-	if (argc != 3) {
-		cerr << "Usage: newsclient host-name port-number" << endl;
-		exit(1);
-	}
-	
-	int port = -1;
-	try {
-		port = stoi(argv[2]);
-	} catch (exception& e) {
-		cerr << "Wrong port number. " << e.what() << endl;
-		exit(1);
-	}
-	
-	Connection conn(argv[1], port);
-	if (!conn.isConnected()) {
-		cerr << "Connection attempt failed" << endl;
-		exit(1);
-	}
-	
-		try {
-		  run(conn);
-		} catch (ConnectionClosedException&) {
-			cout << " no reply from server. Exiting." << endl;
-			exit(1);
-		}
+    if (argc != 3) {
+        cerr << "Usage: newsclient host-name port-number" << endl;
+        exit(1);
+    }
+    
+    int port = -1;
+    try {
+        port = stoi(argv[2]);
+    } catch (exception& e) {
+        cerr << "Wrong port number. " << e.what() << endl;
+        exit(1);
+    }
+    
+    Connection conn(argv[1], port);
+    if (!conn.isConnected()) {
+        cerr << "Connection attempt failed" << endl;
+        exit(1);
+    }
+    
+    try {
+        run(conn);
+    } catch (ConnectionClosedException&) {
+        cout << " no reply from server. Exiting." << endl;
+        exit(1);
+    }
 }
 

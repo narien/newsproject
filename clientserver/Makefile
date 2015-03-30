@@ -33,7 +33,7 @@ libclientserver.a: connection.o server.o
 	ranlib libclientserver.a
 
 memoryserver: mainserver.o server.o connection.o databasememory.o
-diskserver: mainserver.o server.o connection.o databasdisk.o
+diskserver: mainserver.o server.o connection.o databasedisk.o
 testdatabase: databasememory.o databasedisk.o testdatabase.o
 newsclient: connection.o
 

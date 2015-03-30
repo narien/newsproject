@@ -51,6 +51,47 @@ void help(){
     cout << "crtart <groupID>: Creates an article in newsgroup <groupID> and follow the instructions." <<endl;
     cout << "delart <groupID> <artID>: Deletes article <artID> in newsgroup <groupID>." << endl;
     cout << "getart <groupID> <artID>: Displays article <artID> in newsgroup <groupID>" << endl;
+    cout << "exit: Quit the client" << endl;
+}
+
+void run(const Connection& conn) {
+    help();
+    
+    string choice;
+    bool exit = false;
+    while(!exit){
+        cin >> choice;
+        switch (choice) {
+            case "listng":
+                listNG(conn);
+                break;
+            case "crtng":
+                string title;
+                cin >> title;
+                createNG(conn, title);
+                break;
+            case "delng":
+                int id;
+                cin >> id;
+                deleteNG(conn, id);
+                break;
+            case "listart":
+                break;
+            case "crtart":
+                break;
+            case "delart":
+                break;
+            case "getart":
+                break;
+            case "exit":
+                exit = true;
+            
+            default:
+                cout << "Incorrect input, please enter a command with the following syntax:" << endl;
+                help();
+                break;
+        }
+    }
 }
 
 void listNG(const Connection& conn) {
@@ -109,25 +150,6 @@ void deleteNG(const Connection& conn, int groupID) {
   unsigned char endByte = conn.read();
 }
 
-
-void rootMenu(const Connection& conn) {
-  conn.write(Protocol::COM_LIST_NG);
-  conn.write(Protocol::COM_END);
-  unsigned char ansList = conn.read();
-  int nbrOfGroups = getNumP(conn);
-  cout "Newsgroups:" << endl;
-  cout << "ID\tTitle" << endl;
-  for (int i = 0; i < nbrOfGroups; ++i) {
-    int id = getNumP(conn);
-    string title = getStringP(conn);
-    cout << id << "\t" << title << endl;
-  }
-  unsignes char endByte = conn.read();
-  help();
-  int choice;
-  cin >> choice;
-}
-
 int main(int argc, char* argv[]) {
 	if (argc != 3) {
 		cerr << "Usage: newsclient host-name port-number" << endl;
@@ -148,13 +170,11 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 	
-	while (true) {
 		try {
-		  rootMenu(conn);
+		  run(conn);
 		} catch (ConnectionClosedException&) {
 			cout << " no reply from server. Exiting." << endl;
 			exit(1);
 		}
-	}
 }
 

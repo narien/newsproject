@@ -26,5 +26,7 @@ class DatabaseDisk : public DatabaseInterface {
 		int readNewsgroupCntr();
 		int readArticleCntr();
 		const string path = "./db/";
+		const unsigned char isDir = 0x4;
+		const unsigned char isFile = 0x8;
 };
 #endif

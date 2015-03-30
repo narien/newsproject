@@ -3,5 +3,6 @@
 *.a
 mainserver
 testdatabase
+db
 myclient
 myserver

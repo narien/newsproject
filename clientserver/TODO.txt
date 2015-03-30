@@ -1,10 +1,11 @@
 ---TODO---
 
 
--server   		(Nästan klar, refaktorisera)
--client 		(Halvfärdig...)
+-server   		(DONE)
+-client 		(Nästan klar, felsökning)
 -disk database 	(Halvfärdig...)
 -makefile
+-packageing
 -manual
 
 

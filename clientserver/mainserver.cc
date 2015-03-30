@@ -10,13 +10,8 @@
 
 using namespace std;
 
-MainServer::MainServer(Server& server) {
-    //if(smth)
-    db = new DatabaseMemory();
-    //else
-    //wait with this till later...
-    //db = new DatabaseDisk();
-
+MainServer::MainServer(Server& server, DatabaseInterface& database) {
+    this->db = &database;
     this->server = &server;
 }
 
@@ -256,65 +251,109 @@ void MainServer::writeNumber(const std::shared_ptr<Connection>& conn, int value)
     conn->write(value & 0xFF);
 }
 
-int main(int argc, char* argv[]){
-    if (argc != 2) {
-        cerr << "Usage: myserver port-number" << std::endl;
-        exit(1);
-    }
-    
-    int port = -1;
-    try {
-        port = std::stoi(argv[1]);
-    } catch (std::exception& e) {
-        cerr << "Wrong port number. " << e.what() << std::endl;
-        exit(1);
-    }
-    
-    Server server(port);
-    if (!server.isReady()) {
-        cerr << "Server initialization error." << std::endl;
-        exit(1);
-    }
-    MainServer MS(server);
+void MainServer::run(){
     while(true){
-        auto conn = server.waitForActivity();
+        auto conn = server->waitForActivity();
         if(conn != nullptr){
             try {
 	               unsigned int command = conn->read();
               	 switch (command) {
               	      case Protocol::COM_LIST_NG :
-              		        MS.listNG(conn);
-              		        break;
+                         listNG(conn);
+                         break;
               	      case Protocol::COM_CREATE_NG :
-              		        MS.createNG(conn);
-              		        break;
+                         createNG(conn);
+                         break;
               	      case Protocol::COM_DELETE_NG :
-              		        MS.deleteNG(conn);
-              		        break;
+                         deleteNG(conn);
+                         break;
               	      case Protocol::COM_LIST_ART :
-              		        MS.listArt(conn);
-              		        break;
+                         listArt(conn);
+                         break;
               	      case Protocol::COM_CREATE_ART :
-              		        MS.createArt(conn);
-              		        break;
+                         createArt(conn);
+                         break;
               	      case Protocol::COM_DELETE_ART :
-              		        MS.deleteArt(conn);
-              		        break;
+                         deleteArt(conn);
+                         break;
               	      case Protocol::COM_GET_ART :
-              		        MS.getArt(conn);
-              		        break;
+                         getArt(conn);
+                         break;
               	      default :
-                            server->deregisterConnection(conn);
-                            break;
-                  }
+                         server->deregisterConnection(conn);
+                         break;
+                 }
             } catch (exception e) {
-                server.deregisterConnection(conn);
+                server->deregisterConnection(conn);
                 cout << "Client closed connection" << std::endl;
             }
         } else {
             conn = make_shared<Connection>();
-            server.registerConnection(conn);
+            server->registerConnection(conn);
             cout << "New client connects" << std::endl;
         }
     }
 }
+
+//int main(int argc, char* argv[]){
+//    if (argc != 2) {
+//        cerr << "Usage: myserver port-number" << std::endl;
+//        exit(1);
+//    }
+//    
+//    int port = -1;
+//    try {
+//        port = std::stoi(argv[1]);
+//    } catch (std::exception& e) {
+//        cerr << "Wrong port number. " << e.what() << std::endl;
+//        exit(1);
+//    }
+//    
+//    Server server(port);
+//    if (!server.isReady()) {
+//        cerr << "Server initialization error." << std::endl;
+//        exit(1);
+//    }
+//    MainServer MS(server);
+//    while(true){
+//        auto conn = server.waitForActivity();
+//        if(conn != nullptr){
+//            try {
+//	               unsigned int command = conn->read();
+//              	 switch (command) {
+//              	      case Protocol::COM_LIST_NG :
+//              		        MS.listNG(conn);
+//              		        break;
+//              	      case Protocol::COM_CREATE_NG :
+//              		        MS.createNG(conn);
+//              		        break;
+//              	      case Protocol::COM_DELETE_NG :
+//              		        MS.deleteNG(conn);
+//              		        break;
+//              	      case Protocol::COM_LIST_ART :
+//              		        MS.listArt(conn);
+//              		        break;
+//              	      case Protocol::COM_CREATE_ART :
+//              		        MS.createArt(conn);
+//              		        break;
+//              	      case Protocol::COM_DELETE_ART :
+//              		        MS.deleteArt(conn);
+//              		        break;
+//              	      case Protocol::COM_GET_ART :
+//              		        MS.getArt(conn);
+//              		        break;
+//              	      default :
+//                            server->deregisterConnection(conn);
+//                            break;
+//                  }
+//            } catch (exception e) {
+//                server.deregisterConnection(conn);
+//                cout << "Client closed connection" << std::endl;
+//            }
+//        } else {
+//            conn = make_shared<Connection>();
+//            server.registerConnection(conn);
+//            cout << "New client connects" << std::endl;
+//        }
+//    }
+//}

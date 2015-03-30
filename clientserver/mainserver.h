@@ -7,7 +7,7 @@
 
 class MainServer {
 public:
-    MainServer(Server& server);
+    MainServer(Server& server, DatabaseInterface& database);
     ~MainServer();
     void listNG(const std::shared_ptr<Connection>& conn);
     void createNG(const std::shared_ptr<Connection>& conn);
@@ -23,6 +23,7 @@ public:
     int readNumber(const std::shared_ptr<Connection>& conn);
     void writeNumber(const std::shared_ptr<Connection>& conn, int i);
     void writeStringP(const std::shared_ptr<Connection>& conn, string s);
+    void run();
 
 private:
     Server* server;

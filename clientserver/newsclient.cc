@@ -42,6 +42,16 @@ string getStringP(const Connection& conn) {
   }
   return s;
 }
+void help(){
+    cout << "Options:" << endl;
+    cout << "listng: List all newsgroups" << endl;
+    cout << "crtng <groupName>: Create a newsgroup with name <groupName>." << endl;
+    cout << "delng <groupID>: Delete newsgroup <groupID>." << endl;
+    cout << "listart <groupID>: List articles in newsgroup <groupID>." << endl;
+    cout << "crtart <groupID>: Creates an article in newsgroup <groupID> and follow the instructions." <<endl;
+    cout << "delart <groupID> <artID>: Deletes article <artID> in newsgroup <groupID>." << endl;
+    cout << "getart <groupID> <artID>: Displays article <artID> in newsgroup <groupID>" << endl;
+}
 
 void rootMenu(const Connection& conn) {
   conn.write(Protocol::COM_LIST_NG);
@@ -56,10 +66,7 @@ void rootMenu(const Connection& conn) {
     cout << id << "\t" << title << endl;
   }
   unsignes char endByte = conn.read();
-  cout << "Options:" << endl;
-  cout << "1. Delete a newsgroup." << endl;
-  cout << "2. List articles in a newsgroup." << endl;
-  cout << "3. Create a newsgroup." << endl;
+  help();
   int choice;
   cin >> choice;
 }

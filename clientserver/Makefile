@@ -17,7 +17,7 @@ CXXFLAGS += -g
 #CXXFLAGS += -stdlib=libc++
 
 # Targets
-PROGS = libclientserver.a mainserver
+PROGS = libclientserver.a memoryserver diskserver
 
 TEST = testdatabase
 
@@ -32,7 +32,8 @@ libclientserver.a: connection.o server.o
 	ar rv libclientserver.a  connection.o server.o
 	ranlib libclientserver.a
 
-mainserver: mainserver.o server.o connection.o databasememory.o
+memoryserver: mainserver.o server.o connection.o databasememory.o
+diskserver: mainserver.o server.o connection.o databasdisk.o
 testdatabase: databasememory.o databasedisk.o testdatabase.o
 
 # Phony targets

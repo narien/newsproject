@@ -59,24 +59,22 @@ bool DatabaseDisk::insertNewsgroup(string& title) {
 
 					    //newsgroup title already exists, return false
 					    if(tmp_ngname == title) {
+							closedir(dir);
 					    	return false;
 					    }
 					}
 					else {
 						cout << "Unable to open " << local_path << " file." << endl;
-						return false;
 					}
 				}
 				else {
 					cout << "Newsgroup file does not exist." << endl;
-					return false;
 				}
 			}
 		}
 	}
 	else {
-		cout << "Error opening " << path << " directory " << path << endl;
-		return false;
+		cout << "Unable to open " << path << " directory." << endl;
 	}
 
 	closedir(dir);
@@ -103,7 +101,7 @@ bool DatabaseDisk::insertNewsgroup(string& title) {
 	if(ofs.is_open()) {
 		ofs << title << '\n';
 		//article counter start with 1
-		ofs << "1";
+		ofs << "1\n";
 		ofs.close();
 		return true;
 	}
@@ -115,14 +113,56 @@ bool DatabaseDisk::insertNewsgroup(string& title) {
 
 bool DatabaseDisk::insertArticle(int& newsgroup_id, string& article_title, string& article_author, string& article_text) {
 
-	//check if article exists as regular file
-/*	struct stat sb;
-	if (!(stat(ngfolder.c_str(), &sb) == 0 && S_ISREG(sb.st_mode))) {
-		mkdir(ngfolder.c_str(), 0777);
-	}*/
+	//check if newsgroup exists
+	DIR* dir = opendir(path.c_str());
+	if(dir) {
 
-	readArticleCntr(newsgroup_id);
+		struct dirent* entry;
+		while((entry = readdir(dir)) != NULL) {
 
+			//all directories in db
+			if(entry->d_type == isDir && entry->d_name[0] != '.') {
+				//folder exist with same id?
+				if(atoi(entry->d_name) == newsgroup_id) {
+
+					string art_path = path;
+					art_path.append(entry->d_name);
+					art_path.append("/");
+					art_path.append(to_string(readArticleCntr(newsgroup_id)));
+					art_path.append(".txt");
+
+					cout << art_path << endl;
+
+					//check if article exists
+					if(!ifstream(art_path)) {
+						ofstream os(art_path);
+						if(os.is_open()) {
+							os << article_title << '\n' << article_author << '\n' << article_text << '\n';
+						    os.close();
+						    closedir(dir);
+						    return true;
+						}
+						else {
+							cout << "Unable to open " << art_path << " file." << endl;
+						}
+					}
+					else {
+						//article exists, shouldnt happen
+						cout << "Critical database error!" << endl;
+					}
+				}
+				else {
+					//no such newsgroup
+					closedir(dir);
+					return false;
+				}
+			}
+		}
+	}
+	else {
+		cout << "Unable to open " << path << " directory." << endl;
+	}
+	closedir(dir);
 	return false;
 }
 
@@ -164,8 +204,7 @@ int DatabaseDisk::readNewsgroupCntr() {
 
 	if(ifstream(db)) {
 		fstream fs(db);
-		if(fs.is_open())
-		{
+		if(fs.is_open()) {
 			fs >> cntr;
 			fs.seekp(0, std::ios::beg);
 			fs.clear();
@@ -182,7 +221,7 @@ int DatabaseDisk::readNewsgroupCntr() {
 		ofstream ofs(db);
 		if(ofs.is_open()) {
 		//start with 1 and add 1
-		ofs << "2";
+		ofs << "2\n";
 		ofs.close();
 		return 1;
 		}
@@ -190,7 +229,7 @@ int DatabaseDisk::readNewsgroupCntr() {
 			cout << "File " << db << " could not be created." << endl;
 		}
 	}
-	return cntr--;
+	return --cntr;
 }
 
 //return the article counter and increment with one
@@ -220,7 +259,7 @@ int DatabaseDisk::readArticleCntr(int& newsgroup_id) {
 	}
 	else {
 		//om databasen är intakt borde man aldrig hamna här
-		cout << "Critical database error!dfsdfsdfsdfsdfsdddddddddddddddddddddddddddddddddddddddddddddddddddddd" << endl;
+		cout << "Critical database error!" << endl;
 	}
-	return cntr--;
+	return --cntr;
 }

@@ -20,12 +20,16 @@ void test(DatabaseInterface& dbi) {
 	string title1 = "title1";
 	string title2 = "title2";
 	string title3 = "title3";
+	string title4 = "title4";
 
 	dbi.insertNewsgroup(title1);
 	dbi.insertNewsgroup(title2);
 	dbi.insertNewsgroup(title2);
 	dbi.insertNewsgroup(title3);
+	
 	dbi.removeNewsgroup(c);
+
+	dbi.insertNewsgroup(title4);
 
 	cout << "Newsgroups:" << endl;
 	for (auto i : dbi.listNewsgroups()) {

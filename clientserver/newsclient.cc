@@ -81,21 +81,32 @@ void writeStringP(const Connection& conn, string s){
     }
 }
 
-void createGroup(const Connection& conn, string title) {
+void createNG(const Connection& conn, string title) {
   conn.write(Protocol::COM_CREATE_NG);
   writeStringP(conn, title);
   conn.write(Protocol::COM_END);
   unsigned char ansCreateNG = conn.read();
   unsigned char answer = conn.read();
   if (answer == Protocol::ANS_ACK) {
-    cout << "
+    cout << title << " successfully created on the server." << endl;
+  } else if (conn.read() == Protocol::ERR_NG_ALREADY_EXISTS && answer == ANS_NAK) {
+    cout << "Error: " << title << " already exists." << endl;
+  }
+  unsigned char endByte = conn.read();
 }
 
 void deleteNG(const Connection& conn, int groupID) {
   conn.write(Protocol::COM_DELETE_NG);
   writeNumP(groupID);
   conn.write(Protocol::COM_END);
-  
+  unsigned char ansDeleteNG = conn.read();
+  unsigned char answer = conn.read();
+  if (answer == Protocol::ANS_ACK) {
+    cout << title << " successfully deleted on the server." << endl;
+  } else if (conn.read() == Protocol::ERR_NG_DOES_NOT_EXIST && answer == ANS_NAK) {
+    cout << "Error: " << groupID << " does not exist." << endl;
+  }
+  unsigned char endByte = conn.read();
 }
 
 

@@ -164,7 +164,7 @@ void deleteArt(const Connection& conn, int groupID, int artID) {
     unsigned char answer = conn.read();
     if (answer == Protocol::ANS_DELETE_ART) {
         if (answer == Protocol::ANS_ACK) {
-            cout << artID << " successfully created." << endl;
+            cout << artID << " successfully deleted." << endl;
         } else if (answer == Protocol::ANS_NAK) {
             unsigned char errorType = conn.read();
             if (errorType == Protocol::ERR_NG_DOES_NOT_EXIST) {

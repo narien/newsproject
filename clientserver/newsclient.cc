@@ -66,8 +66,10 @@ void listNG(const Connection& conn) {
     conn.write(Protocol::COM_END);
     unsigned char ansList = conn.read();
     int nbrOfGroups = getNumP(conn);
+    
     cout << "Newsgroups:" << endl;
     cout << "ID\tTitle" << endl;
+    
     for (int i = 0; i < nbrOfGroups; ++i) {
         int id = getNumP(conn);
         string title = getStringP(conn);
@@ -207,8 +209,7 @@ void getArt(const Connection& conn, int groupID, int artID) {
     }
 }
 
-void enterArt(Connection& conn){
-    int groupID;
+void enterArt(const Connection& conn){
     cin >> groupID;
     cout << "Enter title of the article:" << endl;
     string title;

@@ -210,6 +210,7 @@ void getArt(const Connection& conn, int groupID, int artID) {
 }
 
 void enterArt(const Connection& conn){
+  int groupID;
     cin >> groupID;
     cout << "Enter title of the article:" << endl;
     string title;

@@ -2,6 +2,8 @@
 #include "protocol.h"
 #include "databasememory.h"
 #include "databasedisk.h"
+#include "connectionclosedexception.h"
+
 
 #include <iostream>
 #include <utility>
@@ -283,7 +285,7 @@ void MainServer::run(){
                          server->deregisterConnection(conn);
                          break;
                  }
-            } catch (exception e) {
+            } catch (ConnectionClosedException&) {
                 server->deregisterConnection(conn);
                 cout << "Client closed connection" << std::endl;
             }
@@ -294,66 +296,3 @@ void MainServer::run(){
         }
     }
 }
-
-//int main(int argc, char* argv[]){
-//    if (argc != 2) {
-//        cerr << "Usage: myserver port-number" << std::endl;
-//        exit(1);
-//    }
-//    
-//    int port = -1;
-//    try {
-//        port = std::stoi(argv[1]);
-//    } catch (std::exception& e) {
-//        cerr << "Wrong port number. " << e.what() << std::endl;
-//        exit(1);
-//    }
-//    
-//    Server server(port);
-//    if (!server.isReady()) {
-//        cerr << "Server initialization error." << std::endl;
-//        exit(1);
-//    }
-//    MainServer MS(server);
-//    while(true){
-//        auto conn = server.waitForActivity();
-//        if(conn != nullptr){
-//            try {
-//	               unsigned int command = conn->read();
-//              	 switch (command) {
-//              	      case Protocol::COM_LIST_NG :
-//              		        MS.listNG(conn);
-//              		        break;
-//              	      case Protocol::COM_CREATE_NG :
-//              		        MS.createNG(conn);
-//              		        break;
-//              	      case Protocol::COM_DELETE_NG :
-//              		        MS.deleteNG(conn);
-//              		        break;
-//              	      case Protocol::COM_LIST_ART :
-//              		        MS.listArt(conn);
-//              		        break;
-//              	      case Protocol::COM_CREATE_ART :
-//              		        MS.createArt(conn);
-//              		        break;
-//              	      case Protocol::COM_DELETE_ART :
-//              		        MS.deleteArt(conn);
-//              		        break;
-//              	      case Protocol::COM_GET_ART :
-//              		        MS.getArt(conn);
-//              		        break;
-//              	      default :
-//                            server->deregisterConnection(conn);
-//                            break;
-//                  }
-//            } catch (exception e) {
-//                server.deregisterConnection(conn);
-//                cout << "Client closed connection" << std::endl;
-//            }
-//        } else {
-//            conn = make_shared<Connection>();
-//            server.registerConnection(conn);
-//            cout << "New client connects" << std::endl;
-//        }
-//    }
-//}

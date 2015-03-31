@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sys/stat.h>
 #include <dirent.h>
+#include <unistd.h>
 #include <limits>
 
 /*---File Structure---
@@ -111,12 +112,78 @@ bool DatabaseDisk::insertArticle(int& newsgroup_id, string& article_title, strin
 
 bool DatabaseDisk::removeNewsgroup(int& newsgroup_id) {
 
+	string ng_path = path;
+	ng_path.append(to_string(newsgroup_id));
+	ng_path.append("/");
+
+	//does newsgroup exist?
+	DIR* dir = opendir(ng_path.c_str());
+	if(dir) {
+		struct dirent* entry;
+		while((entry = readdir(dir)) != NULL) {
+
+			//all files in newsgroup dir
+			if(entry->d_type == isFile && entry->d_name[0] != '.') {
+
+				string local_path = ng_path;
+		    	local_path.append(entry->d_name);
+
+		    	//remove all files in newsgroup directory so that the directory itself can be deleted
+				if(remove(local_path.c_str()) != 0) {
+					cout << local_path << " cannot be removed." << endl;
+				}
+			}
+		}
+	}
+	else {
+		//no such newsgroup
+		closedir(dir);
+		return false;
+	}
+	closedir(dir);
+
+	//remove directory
+	if(rmdir(ng_path.c_str()) == 0) {
+		return true;
+		}
+	else {
+		cout << "Newsgroup with id: " << newsgroup_id << " cannot be removed." << endl;
+	}
 	return false;
 }
 
 //returns 1 if it worked, 0 if no such newsgroup and -1 if no such article
 int DatabaseDisk::removeArticle(int& newsgroup_id, int& article_id) {
 
+	string art_path = path;
+	art_path.append(to_string(newsgroup_id));
+	art_path.append("/");
+
+	//does newsgroup exist?
+	DIR* dir = opendir(art_path.c_str());
+	if(!dir) {
+		//no such newsgroup
+		closedir(dir);
+		return 0;
+	}
+	closedir(dir);
+
+	art_path.append(to_string(article_id));
+	art_path.append(".txt");
+
+	//check if article exists
+	if(ifstream(art_path)) {
+		if(remove(art_path.c_str()) == 0) {
+			return 1;
+		}
+		else {
+			cout << "Article with id: " << article_id << " cannot be removed." << endl;
+		}
+	}
+	else {
+		//article doesnt exists
+		return -1;
+	}
 	return 0;
 }
 
@@ -151,7 +218,7 @@ vector<pair<int, string>> DatabaseDisk::listNewsgroups() {
 					}
 				}
 				else {
-					cout << "Newsgroup file does not exist." << endl;
+					cout << "Newsgroup data file does not exist." << endl;
 				}
 			}
 		}
@@ -172,22 +239,11 @@ bool DatabaseDisk::listArticles(int& newsgroup_id, vector<pair<int, string>>& ar
 
 	//does newsgroup exist?
 	DIR* dir = opendir(art_path.c_str());
-	if(!dir) {
-		//no such newsgroup
-		closedir(dir);
-		return false;
-	}
-	closedir(dir);
-
-	//get all articles in newsgroup
-	dir = opendir(art_path.c_str());
-
 	if(dir) {
-
 		struct dirent* entry;
 		while((entry = readdir(dir)) != NULL) {
 
-			//all files in newsgroup dir exept newsgroup.txt
+			//all files in newsgroup dir exept newsgroup.txt ie all articles
 			if(entry->d_type == isFile && entry->d_name[0] != '.' && entry->d_name[0] != 'n') {
 
 				string local_path = art_path;
@@ -216,7 +272,9 @@ bool DatabaseDisk::listArticles(int& newsgroup_id, vector<pair<int, string>>& ar
 		}
 	}
 	else {
-		cout << "Unable to open " << art_path << " directory." << endl;
+		//no such newsgroup
+		closedir(dir);
+		return false;
 	}
 	closedir(dir);
 	return true;

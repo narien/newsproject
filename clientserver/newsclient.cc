@@ -207,6 +207,28 @@ void getArt(const Connection& conn, int groupID, int artID) {
     }
 }
 
+void enterArt(Connection& conn){
+    int groupID;
+    cin >> groupID;
+    cout << "Enter title of the article:" << endl;
+    string title;
+    cin.ignore();
+    cin.clear();
+    getline(cin, title);
+    cout << "Enter author of the article:" << endl;
+    string author;
+    cin.ignore(-1);
+    cin.clear();
+    getline(cin, author);
+    cout << "Enter the text of the article:" << endl;
+    string text;
+    cin.ignore(-1);
+    cin.clear();
+    getline(cin, text);
+    cin.sync();
+    createArt(conn, groupID, title, author, text);
+}
+
 void run(const Connection& conn) {
     help();
     
@@ -229,19 +251,7 @@ void run(const Connection& conn) {
             cin >> groupID;
             listArt(conn, groupID);
         } else if (choice == "crtart"){
-            int groupID;
-            cin >> groupID;
-            cin.ignore();
-            cout << "Enter title of the article:" << endl;
-            string title;
-            getline(cin, title);
-            cout << "Enter author of the article:" << endl;
-            string author;
-            getline(cin, author);
-            cout << "Enter the text of the article:" << endl;
-            string text;
-            getline(cin, text);
-            createArt(conn, groupID, title, author, text);
+            enterArt(conn);
         } else if (choice == "delart"){
             int groupID;
             int artID;

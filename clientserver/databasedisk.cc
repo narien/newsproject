@@ -50,16 +50,15 @@ bool DatabaseDisk::insertNewsgroup(string& title) {
 	string ngfile = ngfolder;
 	ngfile.append("/newsgroup.txt");
 
-	DIR* new_dir = opendir(ngfolder.c_str());
-	if(!new_dir) {
+	DIR* dir = opendir(ngfolder.c_str());
+	if(!dir) {
 		mkdir(ngfolder.c_str(), 0777);
 	}
 	else {
 		//om databasen är intakt borde man aldrig hamna här
 		cout << "Critical database error!" << endl;
 	}
-
-	closedir(new_dir);
+	closedir(dir);
 
 	//create file
 	ofstream ofs(ngfile);
@@ -78,54 +77,35 @@ bool DatabaseDisk::insertNewsgroup(string& title) {
 
 bool DatabaseDisk::insertArticle(int& newsgroup_id, string& article_title, string& article_author, string& article_text) {
 
-	//check if newsgroup exists
-	DIR* dir = opendir(path.c_str());
-	if(dir) {
+	string art_path = path;
+	art_path.append(to_string(newsgroup_id));
+	art_path.append("/");
 
-		struct dirent* entry;
-		while((entry = readdir(dir)) != NULL) {
+	//does newsgroup exist?
+	DIR* dir = opendir(art_path.c_str());
+	if(!dir) {
+		//no such newsgroup
+		closedir(dir);
+		return false;
+	}
+	closedir(dir);
 
-			//all directories in db
-			if(entry->d_type == isDir && entry->d_name[0] != '.') {
-				//folder exist with same id?
-				if(atoi(entry->d_name) == newsgroup_id) {
+	art_path.append(to_string(readArticleCntr(newsgroup_id)));
+	art_path.append(".txt");
 
-					string art_path = path;
-					art_path.append(entry->d_name);
-					art_path.append("/");
-					art_path.append(to_string(readArticleCntr(newsgroup_id)));
-					art_path.append(".txt");
-
-					//check if article exists
-					if(!ifstream(art_path)) {
-						ofstream os(art_path);
-						if(os.is_open()) {
-							os << article_title << '\n' << article_author << '\n' << article_text << '\n';
-						    os.close();
-						    closedir(dir);
-						    return true;
-						}
-						else {
-							cout << "Unable to open " << art_path << " file." << endl;
-						}
-					}
-					else {
-						//article exists, shouldnt happen
-						cout << "Critical database error!" << endl;
-					}
-				}
-				else {
-					//no such newsgroup
-					closedir(dir);
-					return false;
-				}
-			}
+	//check if article exists
+	if(!ifstream(art_path)) {
+		ofstream os(art_path);
+		if(os.is_open()) {
+			os << article_title << '\n' << article_author << '\n' << article_text << '\n';
+			os.close();
+			return true;
 		}
 	}
 	else {
-		cout << "Unable to open " << path << " directory." << endl;
+		//article exists, shouldnt happen
+		cout << "Critical database error!" << endl;
 	}
-	closedir(dir);
 	return false;
 }
 
@@ -186,64 +166,96 @@ vector<pair<int, string>> DatabaseDisk::listNewsgroups() {
 //returns 1 if it worked, 0 if no such newsgroup
 bool DatabaseDisk::listArticles(int& newsgroup_id, vector<pair<int, string>>& articles) {
 
-		//check if newsgroup exists
-	DIR* dir = opendir(path.c_str());
+	string art_path = path;
+	art_path.append(to_string(newsgroup_id));
+	art_path.append("/");
+
+	//does newsgroup exist?
+	DIR* dir = opendir(art_path.c_str());
+	if(!dir) {
+		//no such newsgroup
+		closedir(dir);
+		return false;
+	}
+	closedir(dir);
+
+	//get all articles in newsgroup
+	dir = opendir(art_path.c_str());
+
 	if(dir) {
 
 		struct dirent* entry;
 		while((entry = readdir(dir)) != NULL) {
 
-			//all directories in db
-			if(entry->d_type == isDir && entry->d_name[0] != '.') {
-				//folder exist with same id?
-				if(atoi(entry->d_name) == newsgroup_id) {
+			//all files in newsgroup dir exept newsgroup.txt
+			if(entry->d_type == isFile && entry->d_name[0] != '.' && entry->d_name[0] != 'n') {
 
-					string art_path = path;
-					art_path.append(entry->d_name);
-					art_path.append("/");
-					art_path.append("1"); //iterate all files
-					art_path.append(".txt");
+				string local_path = art_path;
+		    	local_path.append(entry->d_name);
 
-					cout << art_path << endl;
+		    	//check if article exists
+				if(ifstream(local_path)) {
+					ifstream fs(local_path);
+					if(fs.is_open()) {
+						string tmp_aname;
+						fs >> tmp_aname;
+						fs.close();
 
-					//check if article exists
-					if(ifstream(art_path)) {
-						ifstream fs(art_path);
-						if(fs.is_open()) {
-							string tmp_aname;
-							fs >> tmp_aname;
-						    fs.close();
+						//get article id from file name
+						string tmp_aid = entry->d_name;
+						int pos = tmp_aid.find(".txt");
+						string tmp_aaid = tmp_aid.substr(0, pos);
 
-						    cout << "lol " << tmp_aname << endl;
-
-						    //articles.push_back(make_pair(atoi(), tmp_aname));
-
-						    closedir(dir);
-						    return true;
-						}
-						else {
-							cout << "Unable to open " << art_path << " file." << endl;
-						}
+						articles.push_back(make_pair(atoi(tmp_aaid.c_str()), tmp_aname));
 					}
-				}
-				else {
-					//no such newsgroup
-					closedir(dir);
-					return false;
+					else {
+						cout << "Unable to open " << local_path << " file." << endl;
+					}
 				}
 			}
 		}
 	}
 	else {
-		cout << "Unable to open " << path << " directory." << endl;
+		cout << "Unable to open " << art_path << " directory." << endl;
 	}
 	closedir(dir);
-	return false;
+	return true;
 }
 
 //returns 1 if it worked, 0 if no such newsgroup and -1 if no such article, writes the relevant data to the input variables
 int DatabaseDisk::getArticle(const int& newsgroup_id, const int& article_id, string& article_title, string& article_author, string& article_text) {
 
+	string art_path = path;
+	art_path.append(to_string(newsgroup_id));
+	art_path.append("/");
+
+	//does newsgroup exist?
+	DIR* dir = opendir(art_path.c_str());
+	if(!dir) {
+		//no such newsgroup
+		closedir(dir);
+		return 0;
+	}
+	closedir(dir);
+
+	art_path.append(to_string(article_id));
+	art_path.append(".txt");
+
+	//check if article exists
+	if(ifstream(art_path)) {
+		ifstream fs(art_path);
+		if(fs.is_open()) {
+			fs >> article_title;
+			fs >> article_author;
+			fs >> article_text;
+			fs.close();
+			return 1;
+		}
+	}
+	else {
+		//article doesnt exists
+		return -1;
+	}
 	return 0;
 }
 

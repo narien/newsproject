@@ -26,7 +26,7 @@ void test(DatabaseInterface& dbi) {
 	dbi.insertNewsgroup(title2);
 	dbi.insertNewsgroup(title2);
 	dbi.insertNewsgroup(title3);
-	
+
 	dbi.removeNewsgroup(c);
 
 	dbi.insertNewsgroup(title4);
@@ -77,7 +77,7 @@ void test(DatabaseInterface& dbi) {
 
 	dbi.getArticle(a, d, getTitle, getAuthor, getText);
 
-	cout << "id: " << b << " Title: " << getTitle << " Author: " << getAuthor << " Text: " << getText << endl << endl;
+	cout << "id: " << d << " Title: " << getTitle << " Author: " << getAuthor << " Text: " << getText << endl << endl;
 }
 
 int main() {

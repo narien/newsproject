@@ -1,7 +1,6 @@
 #include "mainserver.h"
 #include "protocol.h"
-#include "databasememory.h"
-#include "databasedisk.h"
+#include "databaseinterface.h"
 #include "connectionclosedexception.h"
 
 

@@ -211,25 +211,25 @@ void enterArt(const Connection& conn){
     string text;
     string line;
     if (cin.good()) {
-      cout << "Enter title of the article:" << endl;
-      
-      cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );
-      getline(cin, title);
-      cout << "Enter author of the article:" << endl;
-      
-      getline(cin, author);
-      cout << "Enter the text of the article, separate sections by pressing enter and finish with end-of-file (usally ctrl + d on a new line):" << endl;
-
-      while (getline(cin, line)) {
-	text += "\n";
-	text += line;
-      }
-      cin.clear();
-      createArt(conn, groupID, title, author, text);
+        cout << "Enter title of the article:" << endl;
+        
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );
+        getline(cin, title);
+        cout << "Enter author of the article:" << endl;
+        
+        getline(cin, author);
+        cout << "Enter the text of the article, separate sections by pressing enter and finish with end-of-file (usually ctrl + d on a new line):" << endl;
+        
+        while (getline(cin, line)) {
+            text += "\n";
+            text += line;
+        }
+        cin.clear();
+        createArt(conn, groupID, title, author, text);
     } else {
-      cin.clear();
+        cin.clear();
     }
-
+    
 }
 
 void run(const Connection& conn) {
@@ -244,24 +244,24 @@ void run(const Connection& conn) {
         }else if (choice == "crtng"){
             string title;
             cin >> title;
-	    if (cin.good())
-	      createNG(conn, title);
-	    else
-	      cin.clear();
+            if (cin.good())
+                createNG(conn, title);
+            else
+                cin.clear();
         } else if (choice == "delng"){
             int groupID;
             cin >> groupID;
-	    if (cin.good())
-	      deleteNG(conn, groupID);
-	    else
-	      cin.clear();
+            if (cin.good())
+                deleteNG(conn, groupID);
+            else
+                cin.clear();
         } else if (choice == "listart"){
             int groupID;
             cin >> groupID;
-	    if (cin.good())
-	      listArt(conn, groupID);
-	    else
-	      cin.clear();
+            if (cin.good())
+                listArt(conn, groupID);
+            else
+                cin.clear();
         } else if (choice == "crtart"){
             enterArt(conn);
         } else if (choice == "delart"){
@@ -269,24 +269,24 @@ void run(const Connection& conn) {
             int artID;
             cin >> groupID;
             cin >> artID;
-	    if (cin.good())
-	      deleteArt(conn, groupID, artID);
-	    else
-	      cin.clear();
+            if (cin.good())
+                deleteArt(conn, groupID, artID);
+            else
+                cin.clear();
         } else if (choice == "getart"){
             int groupID;
             int artID;
             cin >> groupID;
             cin >> artID;
-	    if (cin.good())
-	      getArt(conn, groupID, artID);
-	    else
-	      cin.clear();
+            if (cin.good())
+                getArt(conn, groupID, artID);
+            else
+                cin.clear();
         } else if (choice == "exit"){
             exit = true;
         } else {
-	    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );
-	    cout << endl << "Incorrect input, please enter a command with the following syntax:" << endl;
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );
+            cout << endl << "Incorrect input, please enter a command with the following syntax:" << endl;
             help();
         }
     }

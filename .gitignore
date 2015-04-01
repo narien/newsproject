@@ -1,9 +1,11 @@
 *.d
 *.o
 *.a
-mainserver
 testdatabase
 db
 myclient
 myserver
 newsclient
+mainserver
+diskserver
+memoryserver

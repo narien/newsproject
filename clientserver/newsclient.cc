@@ -225,6 +225,7 @@ void enterArt(const Connection& conn){
             text += line;
             text += "\n";
         }
+        text.erase(text.size()-1);
         
         cin.clear();
         clearerr(stdin);

@@ -74,6 +74,7 @@ bool DatabaseDisk::insertNewsgroup(string& title) {
 		}
 	}
 	else {
+		//om databasen är intakt borde man aldrig hamna här
 		closedir(dir);
 		cout << "Critical database error!" << endl;
 	}

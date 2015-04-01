@@ -218,7 +218,7 @@ void enterArt(const Connection& conn){
       cout << "Enter author of the article:" << endl;
       
       getline(cin, author);
-      cout << "Enter the text of the article, separate sections by pressing enter and finish with end-of-file (usally ctrl + d on a new line):" << endl;
+      cout << "Enter the text of the article, separate sections by pressing enter and finish with end-of-file (usually ctrl + d on a new line):" << endl;
 
       while (getline(cin, line)) {
 	text += "\n";

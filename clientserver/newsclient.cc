@@ -132,7 +132,7 @@ void listArt(const Connection& conn, int groupID) {
         }
         cout << endl;
     } else if (conn.read() == Protocol::ERR_NG_DOES_NOT_EXIST && answer == Protocol::ANS_NAK) {
-        cout << "Error: " << groupID << " does not exist." << endl;
+        cout << "Error: NewsgroupID " << groupID << " does not exist." << endl;
     }
     conn.read();
 }

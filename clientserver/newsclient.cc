@@ -222,9 +222,10 @@ void enterArt(const Connection& conn){
         cout << "Enter the text of the article, separate sections by pressing enter and finish with end-of-file (usually ctrl + d on a new line):" << endl;
         
         while (getline(cin, line)) {
-            text += "\n";
             text += line;
+            text += "\n";
         }
+        
         cin.clear();
         clearerr(stdin);
         createArt(conn, groupID, title, author, text);

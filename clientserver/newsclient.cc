@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <cstdlib>
 #include <limits>
+#include <cstdio>
 
 
 using namespace std;
@@ -225,6 +226,7 @@ void enterArt(const Connection& conn){
             text += line;
         }
         cin.clear();
+        clearerr(stdin);
         createArt(conn, groupID, title, author, text);
     } else {
         cin.clear();

@@ -315,14 +315,14 @@ int DatabaseDisk::getArticle(const int& newsgroup_id, const int& article_id, str
 			//read text
 			string tmp_line;
 			while(getline(fs, tmp_line) ) {
-				//cout << "def " << tmp_line << endl;
 				if(!tmp_line.empty()) {
-					cout << "noempty " << tmp_line << endl;
 			      	article_text.append(tmp_line);
 			      	article_text.append("\n");
 			  	}
 			}
 			fs.close();
+			//remove last newline 
+			article_text.erase(article_text.end()-1, article_text.end());
 			return 1;
 		}
 	}

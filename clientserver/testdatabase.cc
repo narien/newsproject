@@ -51,12 +51,13 @@ void test(DatabaseInterface& dbi) {
 
 	string text1 = "text1";
 	string text2 = "text2";
+	string text_multiline = "text1\ntext2\ntext3";
 
 
 	dbi.insertArticle(a, atitle1, author1, text1);
 	dbi.insertArticle(a, atitle2, author2, text2);
 	dbi.insertArticle(a, atitle3, author3, text2);
-	dbi.insertArticle(a, atitle4, author4, text2);
+	dbi.insertArticle(a, atitle4, author4, text_multiline);
 
 	dbi.removeArticle(a, b);
 
@@ -75,9 +76,15 @@ void test(DatabaseInterface& dbi) {
 	string getAuthor;
 	string getText;
 
-	dbi.getArticle(a, d, getTitle, getAuthor, getText);
+	string getTitle1;
+	string getAuthor1;
+	string getText1;
 
-	cout << "id: " << d << " Title: " << getTitle << " Author: " << getAuthor << " Text: " << getText << endl << endl;
+	dbi.getArticle(a, d, getTitle, getAuthor, getText);
+	dbi.getArticle(a, a, getTitle1, getAuthor1, getText1);
+
+	cout << "id: " << d << " Title: " << getTitle << " Author: " << getAuthor << " Text: " << endl << getText << endl;
+	cout << "id: " << d << " Title: " << getTitle1 << " Author: " << getAuthor1 << " Text: " << endl << getText1 << endl << endl;
 }
 
 int main() {

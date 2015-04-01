@@ -18,7 +18,10 @@ db (root)
 ---*/
 
 //req: "Changes to the database are immediately reflected on disk."
-//req: no limits on name
+//req: no limits on titles ,authors and texts
+
+//title and author on one line only
+//text can be multiline
 
 DatabaseDisk::DatabaseDisk() {
 
@@ -98,7 +101,10 @@ bool DatabaseDisk::insertArticle(int& newsgroup_id, string& article_title, strin
 	if(!ifstream(art_path)) {
 		ofstream os(art_path);
 		if(os.is_open()) {
-			os << article_title << '\n' << article_author << '\n' << article_text << '\n';
+			os << article_title << '\n' << article_author << '\n';
+			//text can be multiline
+			os.write(article_text.c_str(), article_text.length());
+			os << '\n';
 			os.close();
 			return true;
 		}
@@ -305,7 +311,17 @@ int DatabaseDisk::getArticle(const int& newsgroup_id, const int& article_id, str
 		if(fs.is_open()) {
 			fs >> article_title;
 			fs >> article_author;
-			fs >> article_text;
+
+			//read text
+			string tmp_line;
+			while(getline(fs, tmp_line) ) {
+				//cout << "def " << tmp_line << endl;
+				if(!tmp_line.empty()) {
+					cout << "noempty " << tmp_line << endl;
+			      	article_text.append(tmp_line);
+			      	article_text.append("\n");
+			  	}
+			}
 			fs.close();
 			return 1;
 		}
@@ -320,7 +336,7 @@ int DatabaseDisk::getArticle(const int& newsgroup_id, const int& article_id, str
 //return the newsgroup counter and increment with one
 int DatabaseDisk::readNewsgroupCntr() {
 
-	int cntr;
+	int cntr = -1;
 	string db = path;
 	db.append(".db.txt");
 
@@ -357,7 +373,7 @@ int DatabaseDisk::readNewsgroupCntr() {
 //return the article counter and increment with one
 int DatabaseDisk::readArticleCntr(int& newsgroup_id) {
 
-	int cntr;
+	int cntr = -1;
 	string ng = path;
 	ng.append(to_string(newsgroup_id));
 	ng.append("/newsgroup.txt");

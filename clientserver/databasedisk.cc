@@ -59,26 +59,26 @@ bool DatabaseDisk::insertNewsgroup(string& title) {
 	DIR* dir = opendir(ngfolder.c_str());
 	if(!dir) {
 		mkdir(ngfolder.c_str(), 0777);
+
+		//create file
+		ofstream ofs(ngfile);
+		if(ofs.is_open()) {
+			ofs << title << '\n';
+			//article counter start with 1
+			ofs << "1\n";
+			ofs.close();
+			return true;
+		}
+		else {
+			cout << "File " << ngfile << " could not be created." << endl;
+			return false;
+		}
 	}
 	else {
-		//om databasen är intakt borde man aldrig hamna här
 		closedir(dir);
 		cout << "Critical database error!" << endl;
+		return false;
 	}
-
-	//create file
-	ofstream ofs(ngfile);
-	if(ofs.is_open()) {
-		ofs << title << '\n';
-		//article counter start with 1
-		ofs << "1\n";
-		ofs.close();
-		return true;
-	}
-	else {
-		cout << "File " << ngfile << " could not be created." << endl;
-	}
-	return false;
 }
 
 bool DatabaseDisk::insertArticle(int& newsgroup_id, string& article_title, string& article_author, string& article_text) {
@@ -89,30 +89,33 @@ bool DatabaseDisk::insertArticle(int& newsgroup_id, string& article_title, strin
 
 	//does newsgroup exist?
 	DIR* dir = opendir(art_path.c_str());
-	if(!dir) {
-		//no such newsgroup
-		return false;
-	}
-	closedir(dir);
+	if(dir) {
 
-	art_path.append(to_string(readArticleCntr(newsgroup_id)));
-	art_path.append(".txt");
+		closedir(dir);
 
-	//check if article exists
-	if(!ifstream(art_path)) {
-		ofstream os(art_path);
-		if(os.is_open()) {
-			os << article_title << '\n' << article_author << '\n';
-			//text can be multiline
-			os.write(article_text.c_str(), article_text.length());
-			os << '\n';
-			os.close();
-			return true;
+		art_path.append(to_string(readArticleCntr(newsgroup_id)));
+		art_path.append(".txt");
+
+		//check if article exists
+		if(!ifstream(art_path)) {
+			ofstream os(art_path);
+			if(os.is_open()) {
+				os << article_title << '\n' << article_author << '\n';
+				//text can be multiline
+				os.write(article_text.c_str(), article_text.length());
+				os << '\n';
+				os.close();
+				return true;
+			}
+		}
+		else {
+			//article exists, shouldnt happen
+			cout << "Critical database error!" << endl;
 		}
 	}
 	else {
-		//article exists, shouldnt happen
-		cout << "Critical database error!" << endl;
+		//no such newsgroup
+		return false;
 	}
 	return false;
 }
@@ -151,7 +154,7 @@ bool DatabaseDisk::removeNewsgroup(int& newsgroup_id) {
 	//remove directory
 	if(rmdir(ng_path.c_str()) == 0) {
 		return true;
-		}
+	}
 	else {
 		cout << "Newsgroup with id: " << newsgroup_id << " cannot be removed." << endl;
 	}
@@ -167,27 +170,30 @@ int DatabaseDisk::removeArticle(int& newsgroup_id, int& article_id) {
 
 	//does newsgroup exist?
 	DIR* dir = opendir(art_path.c_str());
-	if(!dir) {
-		//no such newsgroup
-		return 0;
-	}
-	closedir(dir);
+	if(dir) {
 
-	art_path.append(to_string(article_id));
-	art_path.append(".txt");
+		closedir(dir);
 
-	//check if article exists
-	if(ifstream(art_path)) {
-		if(remove(art_path.c_str()) == 0) {
-			return 1;
+		art_path.append(to_string(article_id));
+		art_path.append(".txt");
+
+		//check if article exists
+		if(ifstream(art_path)) {
+			if(remove(art_path.c_str()) == 0) {
+				return 1;
+			}
+			else {
+				cout << "Article with id: " << article_id << " cannot be removed." << endl;
+			}
 		}
 		else {
-			cout << "Article with id: " << article_id << " cannot be removed." << endl;
+			//article doesnt exists
+			return -1;
 		}
 	}
 	else {
-		//article doesnt exists
-		return -1;
+		//no such newsgroup
+		return 0;
 	}
 	return 0;
 }
@@ -293,39 +299,42 @@ int DatabaseDisk::getArticle(const int& newsgroup_id, const int& article_id, str
 
 	//does newsgroup exist?
 	DIR* dir = opendir(art_path.c_str());
-	if(!dir) {
-		//no such newsgroup
-		return 0;
-	}
-	closedir(dir);
+	if(dir) {
 
-	art_path.append(to_string(article_id));
-	art_path.append(".txt");
+		closedir(dir);
 
-	//check if article exists
-	if(ifstream(art_path)) {
-		ifstream fs(art_path);
-		if(fs.is_open()) {
-			fs >> article_title;
-			fs >> article_author;
+		art_path.append(to_string(article_id));
+		art_path.append(".txt");
 
-			//read text
-			string tmp_line;
-			while(getline(fs, tmp_line) ) {
-				if(!tmp_line.empty()) {
-			      	article_text.append(tmp_line);
-			      	article_text.append("\n");
-			  	}
+		//check if article exists
+		if(ifstream(art_path)) {
+			ifstream fs(art_path);
+			if(fs.is_open()) {
+				fs >> article_title;
+				fs >> article_author;
+
+				//read text
+				string tmp_line;
+				while(getline(fs, tmp_line) ) {
+					if(!tmp_line.empty()) {
+				      	article_text.append(tmp_line);
+				      	article_text.append("\n");
+				  	}
+				}
+				fs.close();
+				//remove last newline
+				article_text.erase(article_text.end()-1, article_text.end());
+				return 1;
 			}
-			fs.close();
-			//remove last newline
-			article_text.erase(article_text.end()-1, article_text.end());
-			return 1;
+		}
+		else {
+			//article doesnt exists
+			return -1;
 		}
 	}
 	else {
-		//article doesnt exists
-		return -1;
+		//no such newsgroup
+		return 0;
 	}
 	return 0;
 }

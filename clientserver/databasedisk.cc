@@ -71,14 +71,13 @@ bool DatabaseDisk::insertNewsgroup(string& title) {
 		}
 		else {
 			cout << "File " << ngfile << " could not be created." << endl;
-			return false;
 		}
 	}
 	else {
 		closedir(dir);
 		cout << "Critical database error!" << endl;
-		return false;
 	}
+	return false;
 }
 
 bool DatabaseDisk::insertArticle(int& newsgroup_id, string& article_title, string& article_author, string& article_text) {

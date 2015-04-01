@@ -1,9 +1,9 @@
 ---TODO---
 
 
--server   		(DONE)
--client 		(Nästan klar, felsökning)
--disk database 	(Halvfärdig...)
+-server   			(DONE)
+-client 			(DONE)
+-disk database 		(DONE)
 -makefile
 -packageing
 -manual

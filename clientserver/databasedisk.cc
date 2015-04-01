@@ -321,7 +321,7 @@ int DatabaseDisk::getArticle(const int& newsgroup_id, const int& article_id, str
 			  	}
 			}
 			fs.close();
-			//remove last newline 
+			//remove last newline
 			article_text.erase(article_text.end()-1, article_text.end());
 			return 1;
 		}

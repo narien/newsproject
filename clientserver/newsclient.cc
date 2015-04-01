@@ -191,7 +191,7 @@ void getArt(const Connection& conn, int groupID, int artID) {
             string text = getStringP(conn);
             cout << "Title: " <<  title << endl;
             cout << "Author: " << author << endl;
-            cout << "Article text: " << text << endl;
+            cout << "Article text: " << endl << text << endl;
         } else if (answer == Protocol::ANS_NAK) {
             unsigned char errorType = conn.read();
             if (errorType == Protocol::ERR_NG_DOES_NOT_EXIST) {

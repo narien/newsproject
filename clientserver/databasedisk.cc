@@ -31,7 +31,9 @@ DatabaseDisk::DatabaseDisk() {
 		//create dir in current directory with no restrictions
 		mkdir(path.c_str(), 0777);
 	}
-	closedir(dir);
+	else {
+		closedir(dir);
+	}
 }
 
 DatabaseDisk::~DatabaseDisk() {
@@ -60,9 +62,9 @@ bool DatabaseDisk::insertNewsgroup(string& title) {
 	}
 	else {
 		//om databasen är intakt borde man aldrig hamna här
+		closedir(dir);
 		cout << "Critical database error!" << endl;
 	}
-	closedir(dir);
 
 	//create file
 	ofstream ofs(ngfile);
@@ -89,7 +91,6 @@ bool DatabaseDisk::insertArticle(int& newsgroup_id, string& article_title, strin
 	DIR* dir = opendir(art_path.c_str());
 	if(!dir) {
 		//no such newsgroup
-		closedir(dir);
 		return false;
 	}
 	closedir(dir);
@@ -140,13 +141,12 @@ bool DatabaseDisk::removeNewsgroup(int& newsgroup_id) {
 				}
 			}
 		}
+		closedir(dir);
 	}
 	else {
 		//no such newsgroup
-		closedir(dir);
 		return false;
 	}
-	closedir(dir);
 
 	//remove directory
 	if(rmdir(ng_path.c_str()) == 0) {
@@ -169,7 +169,6 @@ int DatabaseDisk::removeArticle(int& newsgroup_id, int& article_id) {
 	DIR* dir = opendir(art_path.c_str());
 	if(!dir) {
 		//no such newsgroup
-		closedir(dir);
 		return 0;
 	}
 	closedir(dir);
@@ -228,11 +227,11 @@ vector<pair<int, string>> DatabaseDisk::listNewsgroups() {
 				}
 			}
 		}
+		closedir(dir);
 	}
 	else {
 		cout << "Unable to open " << path << " directory." << endl;
 	}
-	closedir(dir);
 	return v;
 }
 
@@ -276,13 +275,12 @@ bool DatabaseDisk::listArticles(int& newsgroup_id, vector<pair<int, string>>& ar
 				}
 			}
 		}
+		closedir(dir);
 	}
 	else {
 		//no such newsgroup
-		closedir(dir);
 		return false;
 	}
-	closedir(dir);
 	return true;
 }
 
@@ -297,7 +295,6 @@ int DatabaseDisk::getArticle(const int& newsgroup_id, const int& article_id, str
 	DIR* dir = opendir(art_path.c_str());
 	if(!dir) {
 		//no such newsgroup
-		closedir(dir);
 		return 0;
 	}
 	closedir(dir);

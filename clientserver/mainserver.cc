@@ -1,6 +1,5 @@
 #include "mainserver.h"
 #include "protocol.h"
-#include "databaseinterface.h"
 #include "connectionclosedexception.h"
 
 
@@ -17,8 +16,7 @@ MainServer::MainServer(Server& server, DatabaseInterface& database) {
 }
 
 MainServer::~MainServer() {
-    delete server;
-    delete db;
+
 }
 
 /**

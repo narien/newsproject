@@ -2,6 +2,7 @@
 
 #include "databasedisk.h"
 
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <sys/stat.h>
@@ -18,7 +19,7 @@ db (root)
 ---*/
 
 //req: "Changes to the database are immediately reflected on disk."
-//req: no limits on titles ,authors and texts
+//req: no limits on titles, authors and texts
 
 //title and author on one line only
 //text can be multiline
@@ -40,7 +41,7 @@ DatabaseDisk::~DatabaseDisk() {
 
 }
 
-bool DatabaseDisk::insertNewsgroup(string& title) {
+bool DatabaseDisk::insertNewsgroup(const string& title) {
 
 	//check if newsgroup title exists
 	for (auto i : listNewsgroups()) {
@@ -81,7 +82,7 @@ bool DatabaseDisk::insertNewsgroup(string& title) {
 	return false;
 }
 
-bool DatabaseDisk::insertArticle(int& newsgroup_id, string& article_title, string& article_author, string& article_text) {
+bool DatabaseDisk::insertArticle(const int& newsgroup_id, const string& article_title, const string& article_author, const string& article_text) {
 
 	string art_path = path;
 	art_path.append(to_string(newsgroup_id));
@@ -120,7 +121,7 @@ bool DatabaseDisk::insertArticle(int& newsgroup_id, string& article_title, strin
 	return false;
 }
 
-bool DatabaseDisk::removeNewsgroup(int& newsgroup_id) {
+bool DatabaseDisk::removeNewsgroup(const int& newsgroup_id) {
 
 	string ng_path = path;
 	ng_path.append(to_string(newsgroup_id));
@@ -162,7 +163,7 @@ bool DatabaseDisk::removeNewsgroup(int& newsgroup_id) {
 }
 
 //returns 1 if it worked, 0 if no such newsgroup and -1 if no such article
-int DatabaseDisk::removeArticle(int& newsgroup_id, int& article_id) {
+int DatabaseDisk::removeArticle(const int& newsgroup_id, const int& article_id) {
 
 	string art_path = path;
 	art_path.append(to_string(newsgroup_id));
@@ -187,7 +188,7 @@ int DatabaseDisk::removeArticle(int& newsgroup_id, int& article_id) {
 			}
 		}
 		else {
-			//article doesnt exists
+			//article doesnt exist
 			return -1;
 		}
 	}
@@ -198,7 +199,7 @@ int DatabaseDisk::removeArticle(int& newsgroup_id, int& article_id) {
 	return 0;
 }
 
-vector<pair<int, string>> DatabaseDisk::listNewsgroups() {
+vector<pair<int, string>> DatabaseDisk::listNewsgroups() const {
 
 	vector<pair<int, string>> v;
 
@@ -238,11 +239,13 @@ vector<pair<int, string>> DatabaseDisk::listNewsgroups() {
 	else {
 		cout << "Unable to open " << path << " directory." << endl;
 	}
+	//sort vector before returning, files not guaranteed to be in the correct order
+	sort(v.begin(), v.end(), [] (const pair<int, string>& p1, const pair<int, string>& p2) { return p1.first<p2.first; });
 	return v;
 }
 
 //returns 1 if it worked, 0 if no such newsgroup
-bool DatabaseDisk::listArticles(int& newsgroup_id, vector<pair<int, string>>& articles) {
+bool DatabaseDisk::listArticles(const int& newsgroup_id, vector<pair<int, string>>& articles) const {
 
 	string art_path = path;
 	art_path.append(to_string(newsgroup_id));
@@ -287,11 +290,13 @@ bool DatabaseDisk::listArticles(int& newsgroup_id, vector<pair<int, string>>& ar
 		//no such newsgroup
 		return false;
 	}
+	//sort vector before returning, files not guaranteed to be in the correct order
+	sort(articles.begin(), articles.end(), [] (const pair<int, string>& p1, const pair<int, string>& p2) { return p1.first<p2.first; });
 	return true;
 }
 
 //returns 1 if it worked, 0 if no such newsgroup and -1 if no such article, writes the relevant data to the input variables
-int DatabaseDisk::getArticle(const int& newsgroup_id, const int& article_id, string& article_title, string& article_author, string& article_text) {
+int DatabaseDisk::getArticle(const int& newsgroup_id, const int& article_id, string& article_title, string& article_author, string& article_text) const {
 
 	string art_path = path;
 	art_path.append(to_string(newsgroup_id));
@@ -340,7 +345,7 @@ int DatabaseDisk::getArticle(const int& newsgroup_id, const int& article_id, str
 }
 
 //return the newsgroup counter and increment with one
-int DatabaseDisk::readNewsgroupCntr() {
+int DatabaseDisk::readNewsgroupCntr() const {
 
 	int cntr = -1;
 	string db = path;
@@ -377,7 +382,7 @@ int DatabaseDisk::readNewsgroupCntr() {
 }
 
 //return the article counter and increment with one
-int DatabaseDisk::readArticleCntr(int& newsgroup_id) {
+int DatabaseDisk::readArticleCntr(const int& newsgroup_id) const {
 
 	int cntr = -1;
 	string ng = path;

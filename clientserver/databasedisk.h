@@ -14,17 +14,17 @@ class DatabaseDisk : public DatabaseInterface {
 	public:
 		DatabaseDisk();
 		~DatabaseDisk();
-		bool insertNewsgroup(string& title) override;
-		bool insertArticle(int& newsgroup_id, string& article_title, string& article_author, string& article_text) override;
-		bool removeNewsgroup(int& newsgroup_id) override;
-		int removeArticle(int& newsgroup_id, int& article_id) override;
-		vector<pair<int, string>> listNewsgroups() override;
-    	bool listArticles(int& newsgroup_id, vector<pair<int, string>>& articles) override;
-    	int getArticle(const int& newsgroup_id, const int& article_id, string& article_title, string& article_author, string& article_text) override;
+		bool insertNewsgroup(const string& title) override;
+		bool insertArticle(const int& newsgroup_id, const string& article_title, const string& article_author, const string& article_text) override;
+		bool removeNewsgroup(const int& newsgroup_id) override;
+		int removeArticle(const int& newsgroup_id, const int& article_id) override;
+		vector<pair<int, string>> listNewsgroups() const override;
+    	bool listArticles(const int& newsgroup_id, vector<pair<int, string>>& articles) const override;
+    	int getArticle(const int& newsgroup_id, const int& article_id, string& article_title, string& article_author, string& article_text) const override;
 
 	private:
-		int readNewsgroupCntr();
-		int readArticleCntr(int& newsgroup_id);
+		int readNewsgroupCntr() const;
+		int readArticleCntr(const int& newsgroup_id) const;
 		const string path = "./db/";
 		const unsigned char isDir = 0x4;
 		const unsigned char isFile = 0x8;

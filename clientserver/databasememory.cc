@@ -14,7 +14,7 @@ DatabaseMemory::~DatabaseMemory() {
 
 }
 
-bool DatabaseMemory::insertNewsgroup(string& title) {
+bool DatabaseMemory::insertNewsgroup(const string& title) {
 
 	//check if already exist
 	auto it = find_if(newsgroups.begin(), newsgroups.end(), [title] (const Newsgroup& ng) { return ng.title == title; });
@@ -34,7 +34,7 @@ bool DatabaseMemory::insertNewsgroup(string& title) {
 	}
 }
 
-bool DatabaseMemory::insertArticle(int& newsgroup_id, string& article_title, string& article_author, string& article_text) {
+bool DatabaseMemory::insertArticle(const int& newsgroup_id, const string& article_title, const string& article_author, const string& article_text) {
 
 	//find newsgroup
 	auto it = find_if(newsgroups.begin(), newsgroups.end(), [newsgroup_id] (const Newsgroup& ng) { return ng.id == newsgroup_id; });
@@ -53,7 +53,7 @@ bool DatabaseMemory::insertArticle(int& newsgroup_id, string& article_title, str
 	}
 }
 
-bool DatabaseMemory::removeNewsgroup(int& newsgroup_id) {
+bool DatabaseMemory::removeNewsgroup(const int& newsgroup_id) {
 
 	//find newsgroup
 	auto it = find_if(newsgroups.begin(), newsgroups.end(), [newsgroup_id] (const Newsgroup& ng) { return ng.id == newsgroup_id; });
@@ -68,7 +68,7 @@ bool DatabaseMemory::removeNewsgroup(int& newsgroup_id) {
 }
 
 //returns 1 if it worked, 0 if no such newsgroup and -1 if no such article
-int DatabaseMemory::removeArticle(int& newsgroup_id, int& article_id) {
+int DatabaseMemory::removeArticle(const int& newsgroup_id, const int& article_id) {
 
 	//find newsgroup
 	auto itn = find_if(newsgroups.begin(), newsgroups.end(), [newsgroup_id] (const Newsgroup& ng) { return ng.id == newsgroup_id; });
@@ -90,7 +90,7 @@ int DatabaseMemory::removeArticle(int& newsgroup_id, int& article_id) {
 	}
 }
 
-vector<pair<int, string>> DatabaseMemory::listNewsgroups() {
+vector<pair<int, string>> DatabaseMemory::listNewsgroups() const {
 
 	vector<pair<int, string>> v;
 
@@ -101,7 +101,7 @@ vector<pair<int, string>> DatabaseMemory::listNewsgroups() {
 }
 
 //returns 1 if it worked, 0 if no such newsgroup
-bool DatabaseMemory::listArticles(int& newsgroup_id, vector<pair<int, string>>& articles) {
+bool DatabaseMemory::listArticles(const int& newsgroup_id, vector<pair<int, string>>& articles) const {
 
 	//find newsgroup
 	auto itn = find_if(newsgroups.begin(), newsgroups.end(), [newsgroup_id] (const Newsgroup& ng) { return ng.id == newsgroup_id; });
@@ -119,7 +119,7 @@ bool DatabaseMemory::listArticles(int& newsgroup_id, vector<pair<int, string>>& 
 }
 
 //returns 1 if it worked, 0 if no such newsgroup and -1 if no such article, writes the relevant data to the input variables
-int DatabaseMemory::getArticle(const int& newsgroup_id, const int& article_id, string& article_title, string& article_author, string& article_text) {
+int DatabaseMemory::getArticle(const int& newsgroup_id, const int& article_id, string& article_title, string& article_author, string& article_text) const {
 	
 	//find newsgroup
 	auto itn = find_if(newsgroups.begin(), newsgroups.end(), [newsgroup_id] (const Newsgroup& ng) { return ng.id == newsgroup_id; });

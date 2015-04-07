@@ -242,6 +242,7 @@ void run(const Connection& conn) {
     string choice;
     bool exit = false;
     while(!exit){
+        cout << "newsclient$";
         cin >> choice;
         if(choice == "listng"){
             listNG(conn);

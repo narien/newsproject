@@ -42,7 +42,8 @@ newsclient: connection.o
 
 # Standard clean
 clean:
-	rm -f *.o $(PROGS) $(TEST)
+	rm -f *.o *.d $(PROGS) $(TEST)
+
 
 # Generate dependencies in *.d files
 %.d: %.cc

@@ -1,4 +1,4 @@
-# Makefile to make the file libclientserver.a, containing
+# Makefile to make the files memoryserver, diskserver and newsclient, containing
 # connection.o and server.o
 #
 # Define the compiler. g++ can be
@@ -31,7 +31,6 @@ install:  $(OBJDIR)
 
 memoryserver: mainserver.o server.o connection.o databasememory.o
 diskserver: mainserver.o server.o connection.o databasedisk.o
-testdatabase: databasememory.o databasedisk.o testdatabase.o
 newsclient: connection.o
 
 # Phony targets

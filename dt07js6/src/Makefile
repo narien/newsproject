@@ -19,8 +19,6 @@ CXXFLAGS += -g
 # Targets
 PROGS = memoryserver diskserver newsclient
 
-TEST = testdatabase
-
 OBJDIR    =   ../bin
 
 $(OBJDIR):
@@ -28,17 +26,8 @@ $(OBJDIR):
 
 all: $(PROGS)
 
-test: $(TEST)
-
 install:  $(OBJDIR) 
 	cp $(PROGS) ../bin
-
-# Create the library; ranlib is for Darwin (OS X) and maybe other systems.
-# Doesn't seem to do any damage on other systems.
-
-libclientserver.a: connection.o server.o
-	ar rv libclientserver.a  connection.o server.o
-	ranlib libclientserver.a
 
 memoryserver: mainserver.o server.o connection.o databasememory.o
 diskserver: mainserver.o server.o connection.o databasedisk.o
@@ -50,7 +39,7 @@ newsclient: connection.o
 
 # Standard clean
 clean:
-	rm -f *.o *.d $(PROGS) $(TEST)
+	rm -f *.o *.d $(PROGS)
 
 
 # Generate dependencies in *.d files

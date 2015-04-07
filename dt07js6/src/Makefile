@@ -21,9 +21,19 @@ PROGS = libclientserver.a memoryserver diskserver newsclient
 
 TEST = testdatabase
 
+OBJDIR    =   ../bin
+
+$(OBJDIR):
+	mkdir $(OBJDIR)	
+
 all: $(PROGS)
 
 test: $(TEST)
+
+install:  $(OBJDIR) 
+	cp memoryserver ../bin
+	cp diskserver ../bin
+	cp newsclient ../bin
 
 # Create the library; ranlib is for Darwin (OS X) and maybe other systems.
 # Doesn't seem to do any damage on other systems.

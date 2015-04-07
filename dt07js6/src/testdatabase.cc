@@ -20,7 +20,7 @@ void test(DatabaseInterface& dbi) {
 	string title1 = "title1";
 	string title2 = "title2";
 	string title3 = "title3";
-	string title4 = "title4";
+	string title4 = "title4 spacetest";
 
 	dbi.insertNewsgroup(title1);
 	dbi.insertNewsgroup(title2);
@@ -41,12 +41,12 @@ void test(DatabaseInterface& dbi) {
 	string atitle1 = "atitle1";
 	string atitle2 = "atitle2";
 	string atitle3 = "atitle3";
-	string atitle4 = "atitle4";
+	string atitle4 = "atitle4 spacetest";
 
 	string author1 = "author1";
 	string author2 = "author2";
 	string author3 = "author3";
-	string author4 = "author4";
+	string author4 = "author4 spacetest";
 
 
 	string text1 = "text1";

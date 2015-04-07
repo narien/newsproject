@@ -220,7 +220,7 @@ vector<pair<int, string>> DatabaseDisk::listNewsgroups() const {
 
 					if(fs.is_open()) {
 						string tmp_ngname;
-						fs >> tmp_ngname;
+						getline(fs, tmp_ngname);
 					    fs.close();
 
 						v.push_back(make_pair(atoi(entry->d_name), tmp_ngname));
@@ -268,7 +268,7 @@ bool DatabaseDisk::listArticles(const int& newsgroup_id, vector<pair<int, string
 					ifstream fs(local_path);
 					if(fs.is_open()) {
 						string tmp_aname;
-						fs >> tmp_aname;
+						getline(fs, tmp_aname);
 						fs.close();
 
 						//get article id from file name
@@ -315,8 +315,8 @@ int DatabaseDisk::getArticle(const int& newsgroup_id, const int& article_id, str
 		if(ifstream(art_path)) {
 			ifstream fs(art_path);
 			if(fs.is_open()) {
-				fs >> article_title;
-				fs >> article_author;
+				getline(fs, article_title);
+				getline(fs, article_author);
 
 				//read text
 				string tmp_line;

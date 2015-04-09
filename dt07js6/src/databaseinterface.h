@@ -3,8 +3,6 @@
 #ifndef DATABASE_INTERFACE_H
 #define DATABASE_INTERFACE_H
 
-#include "newsgroup.h"
-
 #include <string>
 #include <vector>
 #include <utility>
